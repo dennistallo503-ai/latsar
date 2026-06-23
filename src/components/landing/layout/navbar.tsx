@@ -1,0 +1,421 @@
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { Menu, Moon, Sun, Search, ChevronDown, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import Image from "next/image"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
+
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet"
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+
+import { useTheme } from "@/hooks/use-theme"
+
+/* ================= DATA ================= */
+
+const profilItems = [
+  { name: "Visi & Misi Pemda TTS", href: "/profil/visi-misi" },
+  { name: "Tugas dan Fungsi", href: "/profil/tugas-fungsi" },
+  { name: "Struktur Organisasi", href: "/profil/struktur-organisasi" },
+]
+
+const informasiItems = [
+  { title: "Sekretariat" },
+  { name: "Sub Bagian Tata Usaha, Program dan Pelaporan", href: "/informasi/tata-usaha" },
+  { name: "Sub Bagian Keuangan dan Perlengkapan", href: "/informasi/keuangan" },
+
+  { title: "Bidang" },
+  { name: "Informasi dan Komunikasi Publik", href: "/informasi/ikp" },
+  { name: "Teknologi Informasi dan Komunikasi", href: "/informasi/tik" },
+  { name: "Persandian dan Statistik", href: "/informasi/persandian-statistik" },
+  
+  { title: "Lainnya" },
+  { name: "Regulasi & Peraturan", href: "/informasi/regulasi" },
+]
+
+const lainnyaItems = [
+  { name: "Layanan", href: "/menu-lainnya/layanan" },
+  { name: "Galeri", href: "/menu-lainnya/galeri" },
+]
+
+/* ================= COMPONENT ================= */
+
+export function Navbar() {
+  const { theme, setTheme } = useTheme()
+  const [isOpen, setIsOpen] = useState(false)
+  const [profilOpen, setProfilOpen] = useState(false)
+  const [infoOpen, setInfoOpen] = useState(false)
+  const [lainnyaOpen, setLainnyaOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  return (
+    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur">
+      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+
+        {/* ================= LOGO ================= */}
+        <div className="flex items-center gap-3">
+
+          {/* LOGO KOMINFO (internal link) */}
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/logo/komin-logo-kecil-super.svg"
+              alt="Logo Kominfo"
+              width={42}
+              height={42}
+              priority
+            />
+          </Link>
+
+          {/* LOGO PEMDA (external link) */}
+          <a
+            href="https://ttskab.go.id/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <Image
+              src="/logo/tts-logo.svg"
+              alt="Logo Kabupaten TTS"
+              width={40}
+              height={40}
+              priority
+            />
+          </a>
+
+          {/* Separator */}
+          <div className="h-8 w-px bg-border" />
+
+          {/* IDENTITAS (tidak clickable atau bisa ikut homepage jika mau) */}
+          <div className="leading-tight">
+            <p className="text-xs sm:text-sm font-semibold">
+              Dinas Komunikasi dan Informatika
+            </p>
+
+            <p className="text-[10px] sm:text-xs text-muted-foreground">
+              Pemerintah Kab. Timor Tengah Selatan
+            </p>
+          </div>
+
+        </div>
+
+        {/* ================= DESKTOP MENU ================= */}
+        <NavigationMenu className="hidden xl:flex">
+          <NavigationMenuList>
+
+            {/* BERANDA */}
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="/" className="px-4 py-2 text-sm font-medium">
+                  Beranda
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+
+            {/* PROFIL */}
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Profil</NavigationMenuTrigger>
+              <NavigationMenuContent className="left-1/2 -translate-x-1/2">
+                <div className="w-72 p-2 space-y-1">
+                  {profilItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="block px-3 py-2 text-sm rounded hover:bg-accent"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            {/* INFORMASI */}
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Informasi</NavigationMenuTrigger>
+              <NavigationMenuContent className="left-1/2 -translate-x-1/2">
+                <div className="w-80 p-2 space-y-1">
+                  {informasiItems.map((item, idx) => {
+                    if ("title" in item) {
+                      return (
+                        <div
+                          key={idx}
+                          className="px-3 py-2 text-xs font-semibold uppercase text-muted-foreground"
+                        >
+                          {item.title}
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="block px-3 py-2 text-sm rounded hover:bg-accent"
+                      >
+                        {item.name}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            {/* MENU LAINNYA */}
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Menu Lainnya</NavigationMenuTrigger>
+              <NavigationMenuContent className="left-1/2 -translate-x-1/2">
+                <div className="w-64 p-2 space-y-1">
+                  {lainnyaItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="block px-3 py-2 text-sm rounded hover:bg-accent"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+
+            {/* KONTAK */}
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link href="#kontak" className="px-4 py-2 text-sm font-medium">
+                  Kontak
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+
+          </NavigationMenuList>
+        </NavigationMenu>
+
+        {/* ================= DESKTOP ACTIONS ================= */}
+        <div className="hidden xl:flex items-center gap-2">
+
+        <div className="flex items-center gap-2">
+
+          {/* Search Box */}
+          <div
+            className={`overflow-hidden transition-all duration-300 ${
+              searchOpen ? "w-80 opacity-100" : "w-0 opacity-0"
+            }`}
+          >
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+
+              <Input
+                placeholder="Cari berita, layanan, regulasi..."
+                className="pl-10 pr-10"
+              />
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                onClick={() => setSearchOpen(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Search Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSearchOpen((prev) => !prev)}
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+
+        </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          >
+            <Sun className="h-5 w-5 dark:rotate-90 dark:scale-0 transition-all" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 dark:rotate-0 dark:scale-100 transition-all" />
+          </Button>
+
+          <Button asChild>
+            <Link href="/sign-in">Login</Link>
+          </Button>
+
+        </div>
+
+        {/* ================= MOBILE MENU ================= */}
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild className="xl:hidden">
+            <Button variant="ghost" size="icon">
+              <Menu />
+            </Button>
+          </SheetTrigger>
+
+          <SheetContent side="right" className="w-full sm:w-[380px] p-0">
+
+          <SheetHeader className="border-b px-5 py-4">
+            <div className="flex items-center gap-3">
+
+              {/* Logo */}
+              <div className="flex items-center gap-2 shrink-0">
+                <Image
+                  src="/logo/komin-logo-kecil-super.svg"
+                  alt="Logo Kominfo"
+                  width={34}
+                  height={34}
+                />
+
+                <Image
+                  src="/logo/tts-logo.svg"
+                  alt="Logo TTS"
+                  width={32}
+                  height={32}
+                />
+              </div>
+
+              {/* Separator */}
+              <div className="h-8 w-px bg-border" />
+
+              {/* Identity */}
+              <div className="leading-tight text-left">
+                <SheetTitle className="text-sm font-semibold p-0">
+                  Dinas Komunikasi dan Informatika
+                </SheetTitle>
+
+                <p className="text-xs text-muted-foreground">
+                  Kabupaten Timor Tengah Selatan
+                </p>
+              </div>
+
+            </div>
+          </SheetHeader>
+
+            <div className="p-4 space-y-3">
+
+              {/* 🔍 MOBILE SEARCH */}
+              <div className="relative">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Cari informasi..." className="pl-9" />
+              </div>
+
+              {/* BERANDA */}
+              <Link href="/" onClick={() => setIsOpen(false)} className="block py-2">
+                Beranda
+              </Link>
+
+              {/* PROFIL */}
+              <Collapsible open={profilOpen} onOpenChange={setProfilOpen}>
+                <CollapsibleTrigger className="flex w-full justify-between py-2">
+                  Profil <ChevronDown className="h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-3 space-y-2">
+                  {profilItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className="block py-1 text-sm"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* INFORMASI */}
+              <Collapsible open={infoOpen} onOpenChange={setInfoOpen}>
+                <CollapsibleTrigger className="flex w-full justify-between py-2">
+                  Informasi <ChevronDown className="h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-3 space-y-2">
+                  {informasiItems.map((item, idx) => {
+                    if ("title" in item) {
+                      return (
+                        <div key={idx} className="text-xs font-bold mt-2">
+                          {item.title}
+                        </div>
+                      )
+                    }
+
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        className="block py-1 text-sm"
+                      >
+                        {item.name}
+                      </Link>
+                    )
+                  })}
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* MENU LAINNYA */}
+              <Collapsible open={lainnyaOpen} onOpenChange={setLainnyaOpen}>
+                <CollapsibleTrigger className="flex w-full justify-between py-2">
+                  Menu Lainnya <ChevronDown className="h-4 w-4" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pl-3 space-y-2">
+                  {lainnyaItems.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className="block py-1 text-sm"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+
+              {/* 🌙 MOBILE ACTIONS */}
+              <div className="pt-4 flex items-center justify-between border-t">
+
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                >
+                  <Sun className="h-5 w-5 dark:rotate-90 dark:scale-0 transition-all" />
+                  <Moon className="absolute h-5 w-5 rotate-90 scale-0 dark:rotate-0 dark:scale-100 transition-all" />
+                </Button>
+
+                <Button asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+
+              </div>
+
+            </div>
+          </SheetContent>
+        </Sheet>
+
+      </div>
+    </header>
+  )
+}
