@@ -1,20 +1,31 @@
 import type { Metadata } from 'next'
 import { LandingPageContent } from './landing-page-content'
 
-// Metadata for the landing page
+// Metadata for Diskominfo Kab. Timor Tengah Selatan
 export const metadata: Metadata = {
-  title: 'Diskominfo - Kab. Timor tengah Selatan',
-  description: 'A beautiful and comprehensive admin dashboard template built with React, Next.js, TypeScript, and shadcn/ui. Perfect for building modern web applications.',
-  keywords: ['admin dashboard', 'react', 'nextjs', 'typescript', 'shadcn/ui', 'tailwind css'],
+  title: 'Diskominfo Kabupaten Timor Tengah Selatan',
+  description:
+    'Website resmi Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan. Menyediakan informasi publik, layanan digital, berita, dan dokumentasi kegiatan pemerintah daerah.',
+  keywords: [
+    'Diskominfo TTS',
+    'Kabupaten Timor Tengah Selatan',
+    'pemerintah daerah',
+    'layanan publik',
+    'informasi pemerintah',
+    'berita TTS',
+    'komunikasi informatika'
+  ],
   openGraph: {
-    title: 'Diskominfo - Kab. Timor tengah Selatan',
-    description: 'A beautiful and comprehensive admin dashboard template built with React, Next.js, TypeScript, and shadcn/ui.',
+    title: 'Diskominfo Kabupaten Timor Tengah Selatan',
+    description:
+      'Portal resmi Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Diskominfo - Kab. Timor tengah Selatan',
-    description: 'A beautiful and comprehensive admin dashboard template built with React, Next.js, TypeScript, and shadcn/ui.',
+    title: 'Diskominfo Kabupaten Timor Tengah Selatan',
+    description:
+      'Portal resmi Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan.',
   },
 }
 
