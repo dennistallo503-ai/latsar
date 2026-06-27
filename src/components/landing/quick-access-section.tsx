@@ -13,7 +13,7 @@ const quickAccess = [
     title: "Pemerintah Provinsi Nusa Tenggara Timur",
     description: "Website resmi Pemerintah Provinsi Nusa Tenggara Timur.",
     href: "https://nttprov.go.id/",
-    image: "/logo/ntt.svg", 
+    image: "/logo/NTT.svg", 
   },
   {
     title: "Pemerintah Kabupaten Timor Tengah Selatan",
