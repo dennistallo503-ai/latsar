@@ -1,67 +1,46 @@
 "use client";
 
-import Link from "next/link";
-
 import {
   Globe,
   Shield,
   BarChart3,
-  Radio,
-  ArrowRight,
   Building2,
   FileText,
-  Users,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Image3D } from "@/components/image-3d";
 
 const mainFunctions = [
   {
-    icon: Radio,
-    title: "Informasi dan Komunikasi Publik",
+    icon: FileText,
+    title: "Perumusan Kebijakan Teknis",
     description:
-      "Menyediakan layanan informasi publik yang transparan dan mudah diakses masyarakat.",
+      "Perumusan kebijakan teknis di bidang komunikasi, informatika, persandian, dan statistik.",
   },
   {
     icon: Globe,
-    title: "Teknologi Informasi",
+    title: "Pelaksanaan Kebijakan Teknis",
     description:
-      "Mendukung transformasi digital dan pengembangan SPBE di lingkungan pemerintah daerah.",
+      "Pelaksanaan kebijakan teknis di bidang komunikasi, informatika, persandian, dan statistik.",
   },
   {
-    icon: Shield,
-    title: "Persandian",
+    icon: Building2,
+    title: "Pelaksanaan Administrasi Dinas",
     description:
-      "Menjaga keamanan informasi dan sistem elektronik pemerintah daerah.",
+      "Pelaksanaan administrasi dinas sebagai pendukung penyelenggaraan urusan pemerintahan.",
   },
   {
     icon: BarChart3,
-    title: "Statistik Sektoral",
+    title: "Evaluasi dan Pelaporan",
     description:
-      "Menyediakan data statistik sebagai dasar perencanaan dan pengambilan keputusan.",
-  },
-];
-
-const profileFeatures = [
-  {
-    icon: Building2,
-    title: "Struktur Organisasi",
-    description:
-      "Mengenal susunan organisasi dan unit kerja Diskominfo Kabupaten TTS.",
+      "Pelaksanaan evaluasi serta pelaporan teknis di bidang komunikasi, informatika, persandian, dan statistik.",
   },
   {
-    icon: FileText,
-    title: "Regulasi",
+    icon: Shield,
+    title: "Pelaksanaan Fungsi Lain",
     description:
-      "Kumpulan regulasi, kebijakan, dan dokumen pendukung penyelenggaraan tugas.",
-  },
-  {
-    icon: Users,
-    title: "Visi dan Misi",
-    description:
-      "Arah pembangunan dan tujuan pelayanan Diskominfo Kabupaten TTS.",
+      "Melaksanakan fungsi lain yang diberikan oleh Bupati sesuai dengan tugas dan fungsi dinas.",
   },
 ];
 
@@ -71,146 +50,81 @@ export function AboutSection() {
       <div className="container mx-auto px-4">
 
         {/* Header */}
-        <div className="mx-auto mb-16 max-w-3xl text-center">
+        <div className="mx-auto mb-16 max-w-4xl text-center">
 
           <Badge variant="outline" className="mb-4">
-            Tentang Diskominfo
+            Profil Diskominfo
           </Badge>
 
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Mewujudkan Pelayanan Informasi yang
-            Transparan dan Berbasis Digital
+            Tugas dan Fungsi
+            <br />
+            Dinas Komunikasi dan Informatika
+            <br />
+            Kabupaten Timor Tengah Selatan
           </h2>
 
-          <p className="mt-4 text-lg text-muted-foreground">
-            Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan
-            berperan dalam pengelolaan informasi publik, teknologi informasi,
-            persandian, dan statistik untuk mendukung tata kelola pemerintahan
-            yang efektif dan modern.
+          <p className="mt-5 text-lg leading-8 text-muted-foreground">
+            Berdasarkan Peraturan Bupati Timor Tengah Selatan Nomor 11 Tahun
+            2025, Dinas Komunikasi dan Informatika mempunyai tugas membantu
+            Bupati melaksanakan urusan pemerintahan di bidang komunikasi,
+            informatika, persandian, dan statistik serta tugas pembantuan yang
+            diberikan kepada daerah.
           </p>
 
         </div>
 
-        {/* Section 1 */}
-        <div className="mb-24 grid items-center gap-12 lg:grid-cols-2">
+        {/* Content */}
+        <div className="grid items-center gap-16 lg:grid-cols-2">
 
           <Image3D
             lightSrc="/hero/hero-1.jpeg"
             darkSrc="/hero/hero-1.jpeg"
-            alt="Diskominfo TTS"
+            alt="Diskominfo Kabupaten Timor Tengah Selatan"
             direction="left"
           />
 
-          <div className="space-y-6">
+          <div>
 
-            <div>
-              <h3 className="text-2xl font-semibold sm:text-3xl">
-                Tugas dan Fungsi Utama
-              </h3>
+            <h3 className="text-2xl font-semibold sm:text-3xl">
+              Fungsi Dinas
+            </h3>
 
-              <p className="mt-3 text-muted-foreground">
-                Diskominfo Kabupaten Timor Tengah Selatan mendukung pelayanan
-                publik melalui pengelolaan informasi, teknologi digital,
-                keamanan informasi, dan statistik sektoral.
-              </p>
-            </div>
+            <p className="mt-3 mb-8 leading-7 text-muted-foreground">
+              Dalam melaksanakan tugasnya, Dinas Komunikasi dan Informatika
+              Kabupaten Timor Tengah Selatan menyelenggarakan fungsi sebagai
+              berikut:
+            </p>
 
-            <ul className="grid gap-4 sm:grid-cols-2">
+            {/* Grid 2 Kolom */}
+            <div className="grid gap-4 md:grid-cols-2">
 
               {mainFunctions.map((item, index) => (
-                <li
+                <div
                   key={index}
-                  className="rounded-lg p-3 transition-colors hover:bg-accent/5"
+                  className="rounded-xl border bg-background p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary hover:shadow-lg"
                 >
-                  <div className="flex gap-3">
+                  <div className="flex flex-col items-start">
 
-                    <item.icon className="mt-1 size-5 text-primary" />
-
-                    <div>
-                      <h4 className="font-medium">
-                        {item.title}
-                      </h4>
-
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {item.description}
-                      </p>
+                    <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10">
+                      <item.icon className="h-5 w-5 text-primary" />
                     </div>
 
+                    <h4 className="font-semibold leading-6">
+                      {item.title}
+                    </h4>
+
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                      {item.description}
+                    </p>
+
                   </div>
-                </li>
+                </div>
               ))}
 
-            </ul>
-
-            <Button asChild size="lg">
-              <Link href="/profil">
-                Profil Dinas
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-
-          </div>
-
-        </div>
-
-        {/* Section 2 */}
-        <div className="grid items-center gap-12 lg:grid-cols-2">
-
-          <div className="space-y-6 order-2 lg:order-1">
-
-            <div>
-              <h3 className="text-2xl font-semibold sm:text-3xl">
-                Profil Organisasi
-              </h3>
-
-              <p className="mt-3 text-muted-foreground">
-                Pelajari visi, misi, regulasi, struktur organisasi,
-                kedudukan dan tugas pokok Diskominfo Kabupaten Timor Tengah Selatan.
-              </p>
             </div>
 
-            <ul className="grid gap-4">
-
-              {profileFeatures.map((item, index) => (
-                <li
-                  key={index}
-                  className="rounded-lg p-3 transition-colors hover:bg-accent/5"
-                >
-                  <div className="flex gap-3">
-
-                    <item.icon className="mt-1 size-5 text-primary" />
-
-                    <div>
-                      <h4 className="font-medium">
-                        {item.title}
-                      </h4>
-
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {item.description}
-                      </p>
-                    </div>
-
-                  </div>
-                </li>
-              ))}
-
-            </ul>
-
-            <Button asChild variant="outline" size="lg">
-              <Link href="/profil">
-                Lihat Selengkapnya
-              </Link>
-            </Button>
-
           </div>
-
-          <Image3D
-            lightSrc="/hero/hero-2.jpeg"
-            darkSrc="/hero/hero-2.jpeg"
-            alt="Profil Diskominfo"
-            direction="right"
-            className="order-1 lg:order-2"
-          />
 
         </div>
 

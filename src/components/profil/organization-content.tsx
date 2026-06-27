@@ -1,21 +1,52 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import Image from "next/image"
+import { useState, useEffect } from "react"
+import { X } from "lucide-react"
+import { supabase } from "@/lib/supabaseClient"
 
 export default function OrganizationStructurePage() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
+  const [data, setData] = useState<any | null>(null)
 
-  // ESC to close modal
+  // ESC close modal
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
+      if (e.key === "Escape") setOpen(false)
+    }
 
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
+    window.addEventListener("keydown", handleEsc)
+    return () => window.removeEventListener("keydown", handleEsc)
+  }, [])
+
+  // FETCH SUPABASE
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase
+        .from("struktur_organisasi")
+        .select("*")
+        .maybeSingle()
+
+      if (error) {
+        console.log("FETCH ERROR:", error.message)
+        return
+      }
+
+      setData(data ?? null)
+    }
+
+    fetchData()
+  }, [])
+
+  const imageUrl =
+    data?.image_url && data.image_url.length > 0
+      ? data.image_url
+      : "/placeholder.svg"
+
+  const description =
+    data?.description?.length > 0
+      ? data.description
+      : "Struktur organisasi Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan menggambarkan susunan jabatan, bidang, serta alur koordinasi dalam pelaksanaan tugas pemerintahan daerah."
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -47,7 +78,7 @@ export default function OrganizationStructurePage() {
               onClick={() => setOpen(true)}
             >
               <Image
-                src="/images/struktur-organisasi.jpeg"
+                src={imageUrl}
                 alt="Struktur Organisasi Diskominfo TTS"
                 fill
                 className="object-contain transition hover:scale-[1.02]"
@@ -57,25 +88,22 @@ export default function OrganizationStructurePage() {
 
           </div>
 
-          {/* DESCRIPTION */}
+          {/* DESCRIPTION (TETAP STYLE LAMA) */}
           <div className="text-center">
             <p className="mx-auto max-w-3xl text-muted-foreground leading-relaxed">
-              Struktur organisasi Dinas Komunikasi dan Informatika Kabupaten
-              Timor Tengah Selatan menggambarkan susunan jabatan, bidang, serta
-              alur koordinasi dalam pelaksanaan tugas pemerintahan daerah.
+              {description}
             </p>
           </div>
 
         </div>
       </section>
 
-      {/* MODAL GALLERY */}
+      {/* MODAL */}
       {open && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setOpen(false)}
         >
-          {/* close button */}
           <button
             className="absolute right-6 top-6 rounded-full bg-white/10 p-2 text-white hover:bg-white/20"
             onClick={() => setOpen(false)}
@@ -83,13 +111,12 @@ export default function OrganizationStructurePage() {
             <X className="h-5 w-5" />
           </button>
 
-          {/* image */}
           <div
             className="relative w-full max-w-5xl h-[80vh]"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src="/images/struktur-organisasi.jpeg"
+              src={imageUrl}
               alt="Preview Struktur Organisasi"
               fill
               className="object-contain"
@@ -100,5 +127,5 @@ export default function OrganizationStructurePage() {
       )}
 
     </div>
-  );
+  )
 }

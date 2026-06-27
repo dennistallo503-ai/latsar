@@ -1,283 +1,389 @@
 "use client"
 
-import { useState } from "react"
-import Image from "next/image"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Save } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Save, Trash } from "lucide-react"
 
-export default function VisionMissionContentPage() {
-  const [data, setData] = useState({
-    bupatiImage: "/placeholder.svg",
-    bupatiName: "Nama Bupati",
+type FormState = {
+  id?: string
+  bupati_name: string
+  bupati_image: string
+  wakil_name: string
+  wakil_image: string
+  visi: string
+  misi: string[]
+}
 
-    wakilImage: "/placeholder.svg",
-    wakilName: "Nama Wakil Bupati",
+export default function VisionMissionAdminPage() {
+  const [loading, setLoading] = useState(false)
 
-    visi:
-      "Terwujudnya Kabupaten Timor Tengah Selatan yang Maju, Sejahtera dan Berkelanjutan.",
-
-    misi: [
-      "Meningkatkan kualitas sumber daya manusia.",
-      "Meningkatkan kualitas lingkungan hidup.",
-      "Meningkatkan pelayanan publik yang profesional.",
-      "Mendorong pertumbuhan ekonomi daerah.",
-    ],
+  const [form, setForm] = useState<FormState>({
+    id: undefined,
+    bupati_name: "",
+    bupati_image: "",
+    wakil_name: "",
+    wakil_image: "",
+    visi: "",
+    misi: [],
   })
 
-  const handleImageChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: "bupatiImage" | "wakilImage"
-  ) => {
-    const file = e.target.files?.[0]
+  // ========================
+  // LOAD DATA (1 ROW ONLY)
+  // ========================
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase
+        .from("profile_visi_misi")
+        .select("*")
+        .limit(1)
+        .maybeSingle()
 
-    if (file) {
-      setData({
-        ...data,
-        [field]: URL.createObjectURL(file),
-      })
+      if (error) {
+        console.error(error)
+        return
+      }
+
+      if (data) {
+        setForm({
+          id: data.id,
+          bupati_name: data.bupati_name || "",
+          bupati_image: data.bupati_image || "",
+          wakil_name: data.wakil_name || "",
+          wakil_image: data.wakil_image || "",
+          visi: data.visi || "",
+          misi: Array.isArray(data.misi) ? data.misi : [],
+        })
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // ========================
+  // AUTO DELETE + UPLOAD IMAGE
+  // ========================
+  const uploadImage = async (
+    file: File,
+    field: "bupati_image" | "wakil_image"
+  ) => {
+    try {
+      const oldUrl = form[field]
+
+      const fileName = `${Date.now()}-${file.name}`
+      const filePath = `vision/${fileName}`
+
+      // upload new image
+      const { data, error } = await supabase.storage
+        .from("images")
+        .upload(filePath, file)
+
+      if (error) {
+        alert(error.message)
+        return
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("images")
+        .getPublicUrl(data.path)
+
+      const newUrl = urlData.publicUrl
+
+      // update UI first
+      setForm((prev) => ({
+        ...prev,
+        [field]: newUrl,
+      }))
+
+      // delete old image
+      if (oldUrl) {
+        const oldPath = oldUrl.split(
+          "/storage/v1/object/public/images/"
+        )[1]
+
+        if (oldPath) {
+          await supabase.storage
+            .from("images")
+            .remove([oldPath])
+        }
+      }
+    } catch (err) {
+      console.error(err)
+      alert("Upload gagal")
     }
   }
 
-  const updateMission = (index: number, value: string) => {
-    const updated = [...data.misi]
-    updated[index] = value
+  // ========================
+  // REMOVE IMAGE MANUAL
+  // ========================
+  const removeImage = async (
+    field: "bupati_image" | "wakil_image"
+  ) => {
+    const url = form[field]
 
-    setData({
-      ...data,
-      misi: updated,
-    })
+    if (url) {
+      const path = url.split(
+        "/storage/v1/object/public/images/"
+      )[1]
+
+      if (path) {
+        await supabase.storage
+          .from("images")
+          .remove([path])
+      }
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      [field]: "",
+    }))
+  }
+
+  // ========================
+  // MISSION HANDLER
+  // ========================
+  const updateMission = (i: number, value: string) => {
+    const updated = [...form.misi]
+    updated[i] = value
+    setForm((prev) => ({ ...prev, misi: updated }))
   }
 
   const addMission = () => {
-    setData({
-      ...data,
-      misi: [...data.misi, ""],
-    })
+    setForm((prev) => ({
+      ...prev,
+      misi: [...prev.misi, ""],
+    }))
   }
 
-  const removeMission = (index: number) => {
-    setData({
-      ...data,
-      misi: data.misi.filter((_, i) => i !== index),
-    })
+  const removeMission = (i: number) => {
+    setForm((prev) => ({
+      ...prev,
+      misi: prev.misi.filter((_, index) => index !== i),
+    }))
   }
 
-  const handleSave = () => {
-    console.log(data)
-    alert("Data visi misi berhasil disimpan")
+  // ========================
+  // SAVE (UPSERT SAFE)
+  // ========================
+  const handleSave = async () => {
+    setLoading(true)
+
+    const payload = {
+      id: form.id,
+      bupati_name: form.bupati_name,
+      bupati_image: form.bupati_image,
+      wakil_name: form.wakil_name,
+      wakil_image: form.wakil_image,
+      visi: form.visi,
+      misi: form.misi,
+      updated_at: new Date().toISOString(),
+    }
+
+    const { data, error } = await supabase
+      .from("profile_visi_misi")
+      .upsert(payload)
+      .select()
+      .single()
+
+    setLoading(false)
+
+    if (error) {
+      console.error(error)
+      alert(error.message)
+      return
+    }
+
+    if (data?.id) {
+      setForm((prev) => ({ ...prev, id: data.id }))
+    }
+
+    alert("Berhasil disimpan")
   }
 
+  // ========================
+  // UI
+  // ========================
   return (
     <div className="space-y-6">
-      {/* Header */}
+
       <div>
         <h1 className="text-3xl font-bold">
-          Halaman Visi & Misi
+          Edit Visi & Misi
         </h1>
         <p className="text-muted-foreground">
-          Kelola foto pimpinan, visi dan misi daerah.
+          Kelola data profil pimpinan dan visi misi
         </p>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {/* Form */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Form Pengaturan</CardTitle>
-          </CardHeader>
 
-          <CardContent className="space-y-6">
-            {/* Bupati */}
-            <div className="space-y-3">
-              <h3 className="font-semibold">Bupati</h3>
+        {/* LEFT */}
+        <div className="space-y-6">
+
+          {/* BUPATI */}
+          <Card>
+            <CardContent className="space-y-3 pt-6">
+              <h2 className="font-semibold">Bupati</h2>
 
               <Input
-                type="file"
-                accept="image/*"
+                value={form.bupati_name}
                 onChange={(e) =>
-                  handleImageChange(e, "bupatiImage")
+                  setForm({
+                    ...form,
+                    bupati_name: e.target.value,
+                  })
                 }
-              />
-
-              <Input
                 placeholder="Nama Bupati"
-                value={data.bupatiName}
-                onChange={(e) =>
-                  setData({
-                    ...data,
-                    bupatiName: e.target.value,
-                  })
-                }
               />
-            </div>
 
-            {/* Wakil */}
-            <div className="space-y-3">
-              <h3 className="font-semibold">
-                Wakil Bupati
-              </h3>
+              {form.bupati_image && (
+                <div className="w-40 h-52 overflow-hidden rounded border">
+                  <img
+                    src={form.bupati_image}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
 
               <Input
                 type="file"
-                accept="image/*"
-                onChange={(e) =>
-                  handleImageChange(e, "wakilImage")
-                }
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file)
+                    uploadImage(file, "bupati_image")
+                }}
               />
+
+              {form.bupati_image && (
+                <Button
+                  variant="destructive"
+                  onClick={() =>
+                    removeImage("bupati_image")
+                  }
+                >
+                  Hapus Gambar
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* WAKIL */}
+          <Card>
+            <CardContent className="space-y-3 pt-6">
+              <h2 className="font-semibold">
+                Wakil Bupati
+              </h2>
 
               <Input
-                placeholder="Nama Wakil Bupati"
-                value={data.wakilName}
+                value={form.wakil_name}
                 onChange={(e) =>
-                  setData({
-                    ...data,
-                    wakilName: e.target.value,
+                  setForm({
+                    ...form,
+                    wakil_name: e.target.value,
                   })
                 }
+                placeholder="Nama Wakil"
               />
-            </div>
 
-            {/* Visi */}
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Visi
-              </label>
+              {form.wakil_image && (
+                <div className="w-40 h-52 overflow-hidden rounded border">
+                  <img
+                    src={form.wakil_image}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <Input
+                type="file"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file)
+                    uploadImage(file, "wakil_image")
+                }}
+              />
+
+              {form.wakil_image && (
+                <Button
+                  variant="destructive"
+                  onClick={() =>
+                    removeImage("wakil_image")
+                  }
+                >
+                  Hapus Gambar
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* VISI */}
+          <Card>
+            <CardContent className="space-y-3 pt-6">
+              <h2 className="font-semibold">Visi</h2>
 
               <Textarea
-                rows={4}
-                value={data.visi}
+                value={form.visi}
                 onChange={(e) =>
-                  setData({
-                    ...data,
+                  setForm({
+                    ...form,
                     visi: e.target.value,
                   })
                 }
               />
-            </div>
+            </CardContent>
+          </Card>
 
-            {/* Misi */}
-            <div className="space-y-3">
-              <label className="block text-sm font-medium">
-                Misi
-              </label>
+          {/* MISI */}
+          <Card>
+            <CardContent className="space-y-3 pt-6">
+              <h2 className="font-semibold">Misi</h2>
 
-              {data.misi.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2"
-                >
+              {form.misi.map((m, i) => (
+                <div key={i} className="flex gap-2">
                   <Input
-                    value={item}
+                    value={m}
                     onChange={(e) =>
-                      updateMission(
-                        index,
-                        e.target.value
-                      )
+                      updateMission(i, e.target.value)
                     }
                   />
-
                   <Button
                     variant="destructive"
-                    onClick={() =>
-                      removeMission(index)
-                    }
+                    onClick={() => removeMission(i)}
                   >
-                    Hapus
+                    <Trash className="w-4 h-4" />
                   </Button>
                 </div>
               ))}
 
-              <Button
-                variant="outline"
-                onClick={addMission}
-              >
-                Tambah Misi
+              <Button variant="outline" onClick={addMission}>
+                + Tambah Misi
               </Button>
-            </div>
+            </CardContent>
+          </Card>
 
-            <Button
-              onClick={handleSave}
-              className="w-full"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Simpan Perubahan
-            </Button>
-          </CardContent>
-        </Card>
+        </div>
 
-        {/* Preview */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Preview</CardTitle>
-          </CardHeader>
+        {/* RIGHT */}
+        <div>
+          <Card>
+            <CardContent className="pt-6 space-y-4">
 
-          <CardContent className="space-y-8">
-            <div className="grid grid-cols-2 gap-6">
-              <div className="text-center">
-                <div className="relative mx-auto h-52 w-40 overflow-hidden rounded-lg border">
-                  <Image
-                    src={data.bupatiImage}
-                    alt="Bupati"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+              <Button
+                onClick={handleSave}
+                disabled={loading}
+                className="w-full"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                {loading ? "Saving..." : "Simpan Semua"}
+              </Button>
 
-                <h3 className="mt-3 font-semibold">
-                  {data.bupatiName}
-                </h3>
-              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-              <div className="text-center">
-                <div className="relative mx-auto h-52 w-40 overflow-hidden rounded-lg border">
-                  <Image
-                    src={data.wakilImage}
-                    alt="Wakil Bupati"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                <h3 className="mt-3 font-semibold">
-                  {data.wakilName}
-                </h3>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="mb-4 text-center text-2xl font-bold">
-                VISI
-              </h2>
-
-              <p className="text-center leading-relaxed">
-                {data.visi}
-              </p>
-            </div>
-
-            <div>
-              <h2 className="mb-4 text-center text-2xl font-bold">
-                MISI
-              </h2>
-
-              <ol className="space-y-3">
-                {data.misi.map((item, index) => (
-                  <li
-                    key={index}
-                    className="flex gap-3"
-                  >
-                    <span className="font-bold">
-                      {index + 1}.
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   )

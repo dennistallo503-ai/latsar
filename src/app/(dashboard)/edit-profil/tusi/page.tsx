@@ -1,163 +1,159 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Save, Plus, Trash2 } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Save, Trash } from "lucide-react"
 
-export default function TugasFungsiPageContent() {
-  const [tugas, setTugas] = useState(
-    "Membantu Bupati dalam melaksanakan urusan pemerintahan daerah di bidang komunikasi dan informatika, persandian dan statistik."
-  )
+export default function TaskFunctionAdmin() {
+  const [loading, setLoading] = useState(false)
 
-  const [fungsi, setFungsi] = useState([
-    "Perumusan kebijakan teknis bidang komunikasi dan informatika.",
-    "Pelaksanaan urusan pemerintahan bidang komunikasi dan informatika.",
-    "Pelaksanaan urusan persandian untuk pengamanan informasi.",
-    "Pelaksanaan urusan statistik sektoral.",
-  ])
+  const [form, setForm] = useState<any>({
+    id: null,
+    tugas: "",
+    fungsi: [],
+  })
 
-  const updateFungsi = (index: number, value: string) => {
-    const newFungsi = [...fungsi]
-    newFungsi[index] = value
-    setFungsi(newFungsi)
+  // LOAD DATA
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await supabase
+        .from("task_function")
+        .select("*")
+        .limit(1)
+        .maybeSingle()
+
+      if (data) {
+        setForm({
+          id: data.id,
+          tugas: data.tugas || "",
+          fungsi: Array.isArray(data.fungsi) ? data.fungsi : [],
+        })
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // UPDATE FUNGSI
+  const updateFungsi = (i: number, value: string) => {
+    const updated = [...form.fungsi]
+    updated[i] = value
+    setForm((p: any) => ({ ...p, fungsi: updated }))
   }
 
   const addFungsi = () => {
-    setFungsi([...fungsi, ""])
+    setForm((p: any) => ({
+      ...p,
+      fungsi: [...p.fungsi, ""],
+    }))
   }
 
-  const removeFungsi = (index: number) => {
-    setFungsi(fungsi.filter((_, i) => i !== index))
+  const removeFungsi = (i: number) => {
+    setForm((p: any) => ({
+      ...p,
+      fungsi: p.fungsi.filter((_: any, idx: number) => idx !== i),
+    }))
   }
 
-  const handleSave = () => {
-    const data = {
-      tugas,
-      fungsi,
+  // SAVE
+  const handleSave = async () => {
+    setLoading(true)
+
+    const payload = {
+      tugas: form.tugas,
+      fungsi: form.fungsi,
+      updated_at: new Date(),
     }
 
-    console.log(data)
-    alert("Data berhasil disimpan")
+    const query = form.id
+      ? supabase.from("task_function").update(payload).eq("id", form.id)
+      : supabase.from("task_function").insert(payload).select().single()
+
+    const { data, error } = await query
+
+    setLoading(false)
+
+    if (error) {
+      console.error(error)
+      alert(error.message)
+      return
+    }
+
+    if (data?.id) {
+      setForm((p: any) => ({ ...p, id: data.id }))
+    }
+
+    alert("Berhasil disimpan")
   }
 
   return (
     <div className="space-y-6">
+
+      {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold">
-          Tugas dan Fungsi
-        </h1>
+        <h1 className="text-3xl font-bold">Edit Tugas & Fungsi</h1>
         <p className="text-muted-foreground">
-          Kelola tugas dan fungsi perangkat daerah.
+          Kelola isi tugas dan fungsi perangkat daerah
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Form */}
-        <Card>
-          <CardContent className="space-y-6 pt-6">
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Tugas
-              </label>
+      <Card>
+        <CardContent className="space-y-5 pt-6">
 
-              <Textarea
-                rows={5}
-                value={tugas}
-                onChange={(e) => setTugas(e.target.value)}
-                placeholder="Masukkan tugas perangkat daerah"
-              />
-            </div>
+          {/* TUGAS */}
+          <div>
+            <label className="text-sm font-medium">Tugas</label>
+            <Textarea
+              value={form.tugas}
+              onChange={(e) =>
+                setForm({ ...form, tugas: e.target.value })
+              }
+              rows={5}
+            />
+          </div>
 
-            <div className="space-y-3">
-              <label className="block text-sm font-medium">
-                Fungsi
-              </label>
+          {/* FUNGSI */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium">Fungsi</label>
 
-              {fungsi.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex gap-2"
+            {form.fungsi.map((item: string, i: number) => (
+              <div key={i} className="flex gap-2">
+                <Input
+                  value={item}
+                  onChange={(e) => updateFungsi(i, e.target.value)}
+                />
+
+                <Button
+                  variant="destructive"
+                  onClick={() => removeFungsi(i)}
                 >
-                  <Input
-                    value={item}
-                    onChange={(e) =>
-                      updateFungsi(index, e.target.value)
-                    }
-                    placeholder={`Fungsi ${index + 1}`}
-                  />
+                  <Trash className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
 
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => removeFungsi(index)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addFungsi}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Tambah Fungsi
-              </Button>
-            </div>
-
-            <Button
-              onClick={handleSave}
-              className="w-full"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Simpan Perubahan
+            <Button variant="outline" onClick={addFungsi}>
+              + Tambah Fungsi
             </Button>
-          </CardContent>
-        </Card>
+          </div>
 
-        {/* Preview */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="space-y-6">
-              <div>
-                <h2 className="mb-3 text-2xl font-bold">
-                  Tugas
-                </h2>
+          {/* SAVE */}
+          <Button
+            onClick={handleSave}
+            disabled={loading}
+            className="w-full"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            {loading ? "Saving..." : "Simpan"}
+          </Button>
 
-                <p className="leading-relaxed">
-                  {tugas}
-                </p>
-              </div>
+        </CardContent>
+      </Card>
 
-              <div>
-                <h2 className="mb-3 text-2xl font-bold">
-                  Fungsi
-                </h2>
-
-                <ol className="space-y-3">
-                  {fungsi.map((item, index) => (
-                    <li
-                      key={index}
-                      className="flex gap-3"
-                    >
-                      <span className="font-semibold">
-                        {index + 1}.
-                      </span>
-
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   )
 }

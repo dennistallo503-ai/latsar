@@ -1,10 +1,11 @@
 import UploadTableModule from "../components/UploadTableModule"
 
-export default function KeuanganPage() {
+export default function TataUsahaPage() {
   return (
     <UploadTableModule
       title="Keuangan"
-      description="Kelola data dokumen dan gambar bidang Keuangan."
+      description="Kelola data dokumen dan gambar Sub Keuangan."
+      category="keuangan"
     />
   )
 }

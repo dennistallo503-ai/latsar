@@ -1,71 +1,211 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Upload, Trash2, FileText, ImageIcon } from "lucide-react"
+
+import { Upload, Trash2, Pencil, X } from "lucide-react"
 
 type Item = {
-  id: number
-  type: "pdf" | "image"
+  id: string
+  kategori: string
   title: string
-  fileUrl: string
-  createdAt: string
+  description: string | null
+  type: "pdf" | "image"
+  image_url: string | null
+  pdf_url: string | null
+  created_at: string
 }
 
 interface Props {
   title: string
   description: string
+  category: string
 }
 
-export default function UploadTableModule({ title, description }: Props) {
-  const [type, setType] = useState<"pdf" | "image">("pdf")
+const PAGE_SIZE = 5
 
-  const [docTitle, setDocTitle] = useState("")
-  const [docLink, setDocLink] = useState("")
+export default function UploadTableModule({
+  title,
+  description,
+  category,
+}: Props) {
+  // ================= SAFE STATE =================
+  const [docTitle, setDocTitle] = useState<string>("")
+  const [docLink, setDocLink] = useState<string>("")
 
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imageDesc, setImageDesc] = useState("")
+  const [imageDesc, setImageDesc] = useState<string>("")
 
   const [items, setItems] = useState<Item[]>([])
 
-  const handleUpload = () => {
-    if (type === "pdf") {
-      if (!docTitle || !docLink) return alert("Lengkapi data PDF")
+  const [editId, setEditId] = useState<string | null>(null)
 
-      const newItem: Item = {
-        id: Date.now(),
-        type: "pdf",
-        title: docTitle,
-        fileUrl: docLink,
-        createdAt: new Date().toLocaleString(),
-      }
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
 
-      setItems([newItem, ...items])
-      setDocTitle("")
-      setDocLink("")
+  // ================= FETCH =================
+  const fetchData = async (pageNumber = 1) => {
+    const from = (pageNumber - 1) * PAGE_SIZE
+    const to = from + PAGE_SIZE - 1
+
+    const { data, count, error } = await supabase
+      .from("informasi_bidang")
+      .select("*", { count: "exact" })
+      .eq("kategori", category)
+      .order("created_at", { ascending: false })
+      .range(from, to)
+
+    if (error) {
+      console.log(error.message)
+      return
     }
 
-    if (type === "image") {
-      if (!imageFile || !imageDesc) return alert("Lengkapi data gambar")
+    setItems(data || [])
+    setTotal(count || 0)
+  }
 
-      const newItem: Item = {
-        id: Date.now(),
-        type: "image",
-        title: imageDesc,
-        fileUrl: URL.createObjectURL(imageFile),
-        createdAt: new Date().toLocaleString(),
-      }
+  useEffect(() => {
+    fetchData(page)
+  }, [page, category])
 
-      setItems([newItem, ...items])
-      setImageFile(null)
-      setImageDesc("")
+  // ================= RESET =================
+  const resetForm = () => {
+    setDocTitle("")
+    setDocLink("")
+    setImageFile(null)
+    setImageDesc("")
+    setEditId(null)
+  }
+
+  // ================= IMAGE UPLOAD =================
+  const uploadImage = async (file: File) => {
+    const fileName = `${Date.now()}-${file.name}`
+
+    const { data, error } = await supabase.storage
+      .from("images")
+      .upload(`informasi/${fileName}`, file)
+
+    if (error) throw error
+
+    const { data: url } = supabase.storage
+      .from("images")
+      .getPublicUrl(data.path)
+
+    return {
+      url: url.publicUrl,
+      path: data.path,
     }
   }
 
-  const handleDelete = (id: number) => {
-    setItems(items.filter((i) => i.id !== id))
+  // ================= SAVE =================
+  const handleUpload = async () => {
+    // ================= PDF =================
+    if (!docTitle.trim() || !docLink.trim()) {
+      return alert("Lengkapi data PDF")
+    }
+
+    if (!editId) {
+      const { error } = await supabase.from("informasi_bidang").insert({
+        kategori: category,
+        type: "pdf",
+        title: docTitle,
+        description: docTitle,
+        pdf_url: docLink,
+      })
+
+      if (error) return alert(error.message)
+    } else {
+      const { error } = await supabase
+        .from("informasi_bidang")
+        .update({
+          title: docTitle,
+          pdf_url: docLink,
+        })
+        .eq("id", editId)
+
+      if (error) return alert(error.message)
+    }
+
+    resetForm()
+    fetchData(page)
+  }
+
+  const handleUploadImage = async () => {
+    if (!imageFile || !imageDesc.trim()) {
+      return alert("Lengkapi data gambar")
+    }
+
+    try {
+      const { url } = await uploadImage(imageFile)
+
+      if (!editId) {
+        const { error } = await supabase.from("informasi_bidang").insert({
+          kategori: category,
+          type: "image",
+          title: imageDesc,
+          description: imageDesc,
+          image_url: url,
+        })
+
+        if (error) return alert(error.message)
+      } else {
+        const { error } = await supabase
+          .from("informasi_bidang")
+          .update({
+            title: imageDesc,
+            description: imageDesc,
+            image_url: url,
+          })
+          .eq("id", editId)
+
+        if (error) return alert(error.message)
+      }
+
+      resetForm()
+      fetchData(page)
+    } catch (err: any) {
+      alert(err.message)
+    }
+  }
+
+  // ================= DELETE =================
+  const handleDelete = async (item: Item) => {
+    if (item.type === "image" && item.image_url) {
+      const path = item.image_url.split(
+        "/storage/v1/object/public/images/"
+      )[1]
+
+      if (path) {
+        await supabase.storage.from("images").remove([path])
+      }
+    }
+
+    await supabase.from("informasi_bidang").delete().eq("id", item.id)
+
+    fetchData(page)
+  }
+
+  // ================= PAGINATION =================
+  const totalPages = Math.ceil(total / PAGE_SIZE)
+
+  const getPages = () => {
+    const max = 3
+    let start = Math.max(1, page - 1)
+    let end = start + max - 1
+
+    if (end > totalPages) {
+      end = totalPages
+      start = Math.max(1, end - max + 1)
+    }
+
+    const pages = []
+    for (let i = start; i <= end; i++) pages.push(i)
+    return pages
   }
 
   return (
@@ -79,122 +219,183 @@ export default function UploadTableModule({ title, description }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-2">
 
-        {/* FORM */}
+        {/* FORM PDF */}
         <Card>
-          <CardContent className="space-y-4 pt-6">
+          <CardContent className="space-y-3 pt-6">
+            <h2 className="font-semibold">PDF</h2>
+
+            <Input
+              value={docTitle}
+              onChange={(e) => setDocTitle(e.target.value)}
+              placeholder="Judul PDF"
+            />
+
+            <Input
+              value={docLink}
+              onChange={(e) => setDocLink(e.target.value)}
+              placeholder="Link Google Drive"
+            />
+
+            <div className="flex gap-2">
+              <Button className="flex-1" onClick={handleUpload}>
+                <Upload className="h-4 w-4 mr-2" />
+                Simpan PDF
+              </Button>
+
+              {editId && (
+                <Button
+                  variant="destructive"
+                  onClick={resetForm}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* FORM IMAGE */}
+        <Card>
+          <CardContent className="space-y-3 pt-6">
+            <h2 className="font-semibold">Gambar</h2>
+
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setImageFile(e.target.files?.[0] || null)
+              }
+            />
+
+            <Input
+              value={imageDesc}
+              onChange={(e) => setImageDesc(e.target.value)}
+              placeholder="Deskripsi gambar"
+            />
 
             <div className="flex gap-2">
               <Button
-                type="button"
-                variant={type === "pdf" ? "default" : "outline"}
-                onClick={() => setType("pdf")}
+                className="flex-1"
+                onClick={handleUploadImage}
               >
-                <FileText className="mr-2 h-4 w-4" />
-                PDF
+                <Upload className="h-4 w-4 mr-2" />
+                Simpan Gambar
               </Button>
 
-              <Button
-                type="button"
-                variant={type === "image" ? "default" : "outline"}
-                onClick={() => setType("image")}
-              >
-                <ImageIcon className="mr-2 h-4 w-4" />
-                Gambar
-              </Button>
+              {editId && (
+                <Button
+                  variant="destructive"
+                  onClick={resetForm}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-
-            {type === "pdf" ? (
-              <>
-                <Input
-                  placeholder="Judul dokumen"
-                  value={docTitle}
-                  onChange={(e) => setDocTitle(e.target.value)}
-                />
-                <Input
-                  placeholder="Link dokumen"
-                  value={docLink}
-                  onChange={(e) => setDocLink(e.target.value)}
-                />
-              </>
-            ) : (
-              <>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    setImageFile(e.target.files?.[0] || null)
-                  }
-                />
-                <Input
-                  placeholder="Deskripsi gambar"
-                  value={imageDesc}
-                  onChange={(e) => setImageDesc(e.target.value)}
-                />
-              </>
-            )}
-
-            <Button onClick={handleUpload} className="w-full">
-              <Upload className="mr-2 h-4 w-4" />
-              Simpan
-            </Button>
           </CardContent>
         </Card>
-
-        {/* TABLE */}
-        <Card>
-          <CardContent className="pt-6 space-y-3">
-            <h2 className="font-semibold">Daftar Data</h2>
-
-            <div className="overflow-x-auto border rounded-lg">
-              <table className="w-full text-sm">
-                <thead className="bg-muted text-left">
-                  <tr>
-                    <th className="p-3">Tipe</th>
-                    <th className="p-3">Judul</th>
-                    <th className="p-3">Link</th>
-                    <th className="p-3">Waktu</th>
-                    <th className="p-3 text-center">Aksi</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {items.map((item) => (
-                    <tr key={item.id} className="border-t">
-                      <td className="p-3">
-                        {item.type === "pdf" ? "PDF" : "Gambar"}
-                      </td>
-                      <td className="p-3">{item.title}</td>
-                      <td className="p-3">
-                        <a
-                          className="text-blue-500 underline"
-                          href={item.fileUrl}
-                          target="_blank"
-                        >
-                          Buka
-                        </a>
-                      </td>
-                      <td className="p-3 text-xs text-muted-foreground">
-                        {item.createdAt}
-                      </td>
-                      <td className="p-3 text-center">
-                        <Button
-                          size="icon"
-                          variant="destructive"
-                          onClick={() => handleDelete(item.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-          </CardContent>
-        </Card>
-
       </div>
+
+      {/* ================= TABLE (DI BAWAH) ================= */}
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b text-left">
+                <th className="p-2">Tipe</th>
+                <th className="p-2">Judul</th>
+                <th className="p-2">Link</th>
+                <th className="p-2">Aksi</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id} className="border-b">
+                  <td className="p-2">{item.type}</td>
+
+                  <td className="p-2">{item.title}</td>
+
+                  <td className="p-2">
+                    {item.type === "pdf" ? (
+                      <a
+                        href={item.pdf_url || "#"}
+                        target="_blank"
+                        className="text-blue-600 underline"
+                      >
+                        Buka PDF
+                      </a>
+                    ) : (
+                      <a
+                        href={item.image_url || "#"}
+                        target="_blank"
+                        className="text-blue-600 underline"
+                      >
+                        Lihat Gambar
+                      </a>
+                    )}
+                  </td>
+
+                  <td className="p-2 flex gap-2">
+                    <Button
+                      size="icon"
+                      onClick={() => {
+                        if (item.type === "pdf") {
+                          setDocTitle(item.title)
+                          setDocLink(item.pdf_url || "")
+                        } else {
+                          setImageDesc(item.description || "")
+                        }
+                        setEditId(item.id)
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      onClick={() => handleDelete(item)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* PAGINATION */}
+          <div className="flex justify-center gap-2 pt-4">
+
+            <Button
+              disabled={page === 1}
+              onClick={() => setPage(page - 1)}
+            >
+              ‹
+            </Button>
+
+            {getPages().map((p) => (
+              <Button
+                key={p}
+                variant={p === page ? "default" : "outline"}
+                onClick={() => setPage(p)}
+              >
+                {p}
+              </Button>
+            ))}
+
+            <Button
+              disabled={page === totalPages}
+              onClick={() => setPage(page + 1)}
+            >
+              ›
+            </Button>
+
+          </div>
+
+        </CardContent>
+      </Card>
     </div>
   )
 }

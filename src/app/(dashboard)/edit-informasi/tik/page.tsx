@@ -5,6 +5,7 @@ export default function IkpPage() {
     <UploadTableModule
       title="Teknologi Informasi & Komunikasi"
       description="Kelola data dokumen dan gambar Bidang Teknologi Informasi & Komunikasi."
+      category="tik"
     />
   )
 }

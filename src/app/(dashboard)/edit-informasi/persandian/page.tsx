@@ -5,6 +5,7 @@ export default function PersandianPage() {
     <UploadTableModule
       title="Persandian & Statistik"
       description="Kelola data dokumen dan gambar Bidang Persandian & Statistik."
+      category="persandian"
     />
   )
 }

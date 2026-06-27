@@ -1,74 +1,88 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
+
 export default function TaskFunctionPage() {
+  const [data, setData] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+
+      const { data, error } = await supabase
+        .from("task_function")
+        .select("*")
+        .limit(1)
+        .maybeSingle()
+
+      if (error) {
+        console.error(error)
+        setData(null)
+      } else {
+        setData({
+          ...data,
+          fungsi: Array.isArray(data?.fungsi) ? data.fungsi : [],
+        })
+      }
+
+      setLoading(false)
+    }
+
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
+  }
+
+  if (!data) {
+    return <div className="min-h-screen flex items-center justify-center">Data belum tersedia</div>
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
 
       {/* HEADER */}
       <section className="relative bg-primary text-primary-foreground">
-        <div className="absolute inset-0 bg-black/10" />
-
-        <div className="container relative mx-auto px-4 py-24 text-center">
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-            Tugas dan Fungsi
-          </h1>
-
-          <p className="mt-4 text-primary-foreground/90 text-base md:text-lg">
-            Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan
+        <div className="container mx-auto px-4 py-24 text-center">
+          <h1 className="text-4xl font-bold">Tugas dan Fungsi</h1>
+          <p className="mt-4 text-primary-foreground/90">
+            Dinas Kominfo Kabupaten TTS
           </p>
         </div>
       </section>
 
       {/* CONTENT */}
-      <section className="py-16 md:py-20">
-        <div className="container mx-auto max-w-6xl px-4">
+      <section className="py-16">
+        <div className="container mx-auto max-w-5xl px-4 grid md:grid-cols-2 gap-8">
 
-          <div className="grid gap-6 md:grid-cols-2">
-
-            {/* TUGAS */}
-            <div className="rounded-3xl border bg-card p-8 shadow-md transition hover:shadow-lg">
-
-              <h2 className="mb-6 text-2xl font-semibold tracking-tight text-primary">
-                Tugas
-              </h2>
-
-              <p className="leading-relaxed text-muted-foreground">
-                Dinas Komunikasi dan Informatika mempunyai tugas membantu Bupati
-                melaksanakan urusan pemerintahan di bidang komunikasi, informatika,
-                persandian, dan statistik yang menjadi kewenangan daerah serta
-                tugas pembantuan yang diberikan kepada daerah.
-              </p>
-
-            </div>
-
-            {/* FUNGSI */}
-            <div className="rounded-3xl border bg-card p-8 shadow-md transition hover:shadow-lg">
-
-              <h2 className="mb-6 text-2xl font-semibold tracking-tight text-primary">
-                Fungsi
-              </h2>
-
-              <ul className="space-y-4 text-muted-foreground">
-
-                {[
-                  "Perumusan kebijakan di bidang komunikasi dan informatika.",
-                  "Pelaksanaan kebijakan di bidang teknologi informasi dan komunikasi.",
-                  "Pengelolaan informasi publik dan komunikasi publik pemerintah daerah.",
-                  "Pelaksanaan persandian dan keamanan informasi daerah.",
-                  "Pelaksanaan statistik sektoral daerah.",
-                ].map((item, index) => (
-                  <li key={index} className="flex gap-3 leading-relaxed">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-
-              </ul>
-
-            </div>
-
+          {/* TUGAS */}
+          <div className="rounded-3xl border bg-card p-8">
+            <h2 className="text-2xl font-bold mb-4 text-primary">Tugas</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              {data.tugas}
+            </p>
           </div>
+
+          {/* FUNGSI */}
+          <div className="rounded-3xl border bg-card p-8">
+            <h2 className="text-2xl font-bold mb-4 text-primary">Fungsi</h2>
+
+            <ol className="space-y-3">
+              {data.fungsi.map((item: string, i: number) => (
+                <li key={i} className="flex gap-3">
+                  <span className="font-bold">{i + 1}.</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
         </div>
       </section>
 
     </div>
-  );
+  )
 }

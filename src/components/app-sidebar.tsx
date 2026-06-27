@@ -1,28 +1,14 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {
-  Info,
-  LayoutPanelLeft,
-  LayoutDashboard,
-  Mail,
-  CheckSquare,
-  MessageCircle,
-  Calendar,
-  Shield,
-  AlertTriangle,
-  Settings,
-  HelpCircle,
-  CreditCard,
-  LayoutTemplate,
-  Users,
-} from "lucide-react"
-import Link from "next/link"
-import { Logo } from "@/components/logo"
-import { SidebarNotification } from "@/components/sidebar-notification"
+import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+import { LogOut } from "lucide-react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
+import { Logo } from "@/components/logo";
+import { NavMain } from "@/components/nav-main";
+
 import {
   Sidebar,
   SidebarContent,
@@ -31,22 +17,18 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+
+import { Button } from "@/components/ui/button";
 
 const data = {
-  user: {
-    name: "ShadcnStore",
-    email: "store@example.com",
-    avatar: "",
-  },
   navGroups: [
     {
-      label: "Dashboards",
+      label: "Dashboard",
       items: [
         {
           title: "Dashboard",
           url: "/dashboard",
-          icon: LayoutDashboard,
         },
       ],
     },
@@ -56,138 +38,90 @@ const data = {
         {
           title: "Beranda",
           url: "/edit-beranda",
-          icon: LayoutTemplate,
         },
         {
           title: "Profil",
           url: "#",
-          icon: Shield,
           items: [
-            {
-              title: "Visi Misi",
-              url: "/edit-profil/visi-misi",
-            },
-            {
-              title: "Tugas & Fungsi",
-              url: "/edit-profil/tusi",
-            },
-            {
-              title: "Struktur Organisasi",
-              url: "/edit-profil/struktur",
-            }
+            { title: "Visi Misi", url: "/edit-profil/visi-misi" },
+            { title: "Tugas & Fungsi", url: "/edit-profil/tusi" },
+            { title: "Struktur Organisasi", url: "/edit-profil/struktur" },
           ],
         },
         {
           title: "Informasi",
           url: "#",
-          icon: AlertTriangle,
           items: [
-            {
-              title: "Tata Usaha",
-              url: "/edit-informasi/tata-usaha",
-            },
-            {
-              title: "Keuangan",
-              url: "/edit-informasi/keuangan",
-            },
-            {
-              title: "IKP",
-              url: "/edit-informasi/ikp",
-            },
-            {
-              title: "TIK",
-              url: "/edit-informasi/tik",
-            },
-            {
-              title: "Persandian & Statistik",
-              url: "/edit-informasi/persandian",
-            },
-            {
-              title: "Regulasi & Peraturan",
-              url: "/edit-informasi/regulasi",
-            },
+            { title: "Tata Usaha", url: "/edit-informasi/tata-usaha" },
+            { title: "Keuangan", url: "/edit-informasi/keuangan" },
+            { title: "IKP", url: "/edit-informasi/ikp" },
+            { title: "TIK", url: "/edit-informasi/tik" },
+            { title: "Persandian & Statistik", url: "/edit-informasi/persandian" },
+            { title: "Regulasi", url: "/edit-informasi/regulasi" },
           ],
         },
         {
           title: "Menu Lainnya",
           url: "#",
-          icon: AlertTriangle,
           items: [
-            {
-              title: "Layanan",
-              url: "/edit-menu-lainnya/layanan",
-            },
-            {
-              title: "Galeri",
-              url: "/edit-menu-lainnya/galeri",
-            },
+            { title: "Layanan", url: "/edit-menu-lainnya/layanan" },
+            { title: "Galeri", url: "/edit-menu-lainnya/galeri" },
           ],
         },
-        // {
-        //   title: "Settings",
-        //   url: "#",
-        //   icon: Settings,
-        //   items: [
-        //     {
-        //       title: "User Settings",
-        //       url: "/settings/user",
-        //     },
-        //     {
-        //       title: "Account Settings",
-        //       url: "/settings/account",
-        //     },
-        //     {
-        //       title: "Plans & Billing",
-        //       url: "/settings/billing",
-        //     },
-        //     {
-        //       title: "Appearance",
-        //       url: "/settings/appearance",
-        //     },
-        //     {
-        //       title: "Notifications",
-        //       url: "/settings/notifications",
-        //     },
-        //     {
-        //       title: "Connections",
-        //       url: "/settings/connections",
-        //     },
-        //   ],
-        // },
       ],
     },
   ],
-}
+};
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/landing");
+  };
+
   return (
     <Sidebar {...props}>
+
+      {/* HEADER */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Logo size={24} className="text-current" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Diskominfo</span>
-                  <span className="truncate text-xs">Admin Dashboard</span>
+                <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <Logo size={24} />
                 </div>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
+      {/* CONTENT */}
       <SidebarContent>
         {data.navGroups.map((group) => (
-          <NavMain key={group.label} label={group.label} items={group.items} />
+          <NavMain
+            key={group.label}
+            label={group.label}
+            items={group.items}
+          />
         ))}
       </SidebarContent>
+
+      {/* FOOTER (ONLY LOGOUT) */}
       <SidebarFooter>
-        <SidebarNotification />
-        <NavUser user={data.user} />
+        <Button
+          onClick={handleLogout}
+          variant="ghost"
+          className="w-full justify-start gap-2 text-red-500 hover:bg-red-50 hover:text-red-600"
+        >
+          <LogOut className="h-4 w-4" />
+          Logout
+        </Button>
       </SidebarFooter>
+
     </Sidebar>
-  )
+  );
 }

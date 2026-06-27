@@ -1,42 +1,82 @@
-"use client";
+"use client"
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from "next/image"
+import { useEffect, useState } from "react"
 
-import { useEffect, useState } from "react";
-
-import Autoplay from "embla-carousel-autoplay";
+import Autoplay from "embla-carousel-autoplay"
 
 import {
   Carousel,
   CarouselApi,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel";
+} from "@/components/ui/carousel"
 
-import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabaseClient"
 
-import { heroSlides } from "./home/hero-slides";
+export function HeroSection({ page = "home" }) {
+  const [api, setApi] = useState<CarouselApi>()
+  const [current, setCurrent] = useState(0)
+  const [slides, setSlides] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-export function HeroSection() {
-  const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
-
+  // TRACK CAROUSEL
   useEffect(() => {
-    if (!api) return;
+    if (!api) return
 
     const onSelect = () => {
-      setCurrent(api.selectedScrollSnap());
-    };
+      setCurrent(api.selectedScrollSnap())
+    }
 
-    onSelect();
-
-    api.on("select", onSelect);
+    onSelect()
+    api.on("select", onSelect)
 
     return () => {
-      api.off("select", onSelect);
-    };
-  }, [api]);
+      api.off("select", onSelect)
+    }
+  }, [api])
+
+  // FETCH DATA (UPDATED + FIXED)
+  useEffect(() => {
+    const fetchHero = async () => {
+      setLoading(true)
+
+      const { data, error } = await supabase
+        .from("hero_sections")
+        .select("*")
+        .eq("page", page)
+        .eq("is_active", true)
+        .order("sort_order", { ascending: true })
+
+      if (error) {
+        console.log("FETCH HERO ERROR:", error)
+      }
+
+      setSlides(data || [])
+      setLoading(false)
+    }
+
+    fetchHero()
+  }, [page])
+
+  // LOADING
+  if (loading) {
+    return (
+      <div className="h-[500px] flex items-center justify-center">
+        Loading hero...
+      </div>
+    )
+  }
+
+  // EMPTY STATE
+  if (!slides.length) {
+    return (
+      <div className="h-[500px] flex items-center justify-center">
+        Belum ada hero untuk halaman ini
+      </div>
+    )
+  }
+
   return (
     <section className="relative">
 
@@ -50,54 +90,44 @@ export function HeroSection() {
           }),
         ]}
       >
+
         <CarouselContent>
 
-          {heroSlides.map((slide, index) => (
-
-            <CarouselItem key={index}>
+          {slides.map((slide, index) => (
+            <CarouselItem key={slide.id}>
 
               <div className="relative h-[500px] md:h-[600px] overflow-hidden">
 
-                <Image
-                  src={slide.image}
-                  alt={slide.title}
-                  fill
-                  priority={index === 0}
-                  className="object-cover"
-                />
+                {/* IMAGE */}
+                {slide.image_url && (
+                  <Image
+                    src={slide.image_url}
+                    alt={slide.heading || "hero"}
+                    fill
+                    priority={index === 0}
+                    className="object-cover"
+                  />
+                )}
 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/85 via-black/70 to-black/50" />
+                {/* OVERLAY */}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/50" />
 
+                {/* CONTENT */}
                 <div className="relative z-10 container mx-auto flex h-full items-center px-4">
 
-                  <div className="relative z-20 max-w-4xl text-white">
+                  <div className="max-w-4xl text-white">
 
-                    {/* Badge */}
                     <span className="inline-flex rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs font-medium backdrop-blur">
                       Website Resmi Diskominfo TTS
                     </span>
 
                     <h1 className="mt-5 text-4xl font-bold leading-tight md:text-6xl">
-
-                      {slide.title}
-
-                      <br />
-
-                      <span className="text-white">
-                        {slide.highlight}
-                      </span>
-
+                      {slide.heading}
                     </h1>
 
                     <p className="mt-6 max-w-2xl text-base leading-8 text-gray-200 md:text-xl">
-
-                      {slide.description}
-
+                      {slide.paragraph}
                     </p>
-
-                    <div className="mt-10 flex flex-wrap gap-4">
-                    </div>
 
                   </div>
 
@@ -106,23 +136,19 @@ export function HeroSection() {
               </div>
 
             </CarouselItem>
-
           ))}
 
         </CarouselContent>
 
       </Carousel>
 
-      {/* Bottom Navigation */}
+      {/* INDICATOR */}
       <div className="absolute bottom-8 left-0 right-0 z-20">
 
         <div className="container mx-auto flex items-center justify-between px-4">
 
-          {/* Indicators */}
           <div className="flex gap-3">
-
-            {heroSlides.map((_, index) => (
-
+            {slides.map((_, index) => (
               <button
                 key={index}
                 onClick={() => api?.scrollTo(index)}
@@ -132,17 +158,12 @@ export function HeroSection() {
                     : "w-3 bg-white/40 hover:bg-white/70"
                 }`}
               />
-
             ))}
-
           </div>
 
-          {/* Counter */}
           <div className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur">
-
             {String(current + 1).padStart(2, "0")} /{" "}
-            {String(heroSlides.length).padStart(2, "0")}
-
+            {String(slides.length).padStart(2, "0")}
           </div>
 
         </div>
@@ -150,5 +171,5 @@ export function HeroSection() {
       </div>
 
     </section>
-  );
+  )
 }

@@ -1,156 +1,216 @@
-"use client";
+"use client"
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
 import {
   FileText,
-  X,
-  Eye,
   Download,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react";
+} from "lucide-react"
 
-interface Dokumen {
-  title: string;
-  desc: string;
-  file: string;
+type Item = {
+  id: string
+  title: string
+  description: string | null
+  type: "pdf"
+  pdf_url: string | null
+  created_at: string
 }
 
+const ITEMS_PER_PAGE = 6
+
+type SortType = "desc" | "asc"
+
 export default function RegulasiPage() {
-  // MODAL PDF
-  const [modalPdf, setModalPdf] = useState<string | null>(null);
+  const [items, setItems] = useState<Item[]>([])
+  const [page, setPage] = useState(1)
+  const [sort, setSort] = useState<SortType>("desc")
 
-  // PAGINATION
-  const [page, setPage] = useState(1);
-  const perPage = 6; // ✅ MAKSIMAL 6 PER HALAMAN
+  // ================= SCROLL TO TOP =================
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }
 
-  const dokumen: Dokumen[] = [
-    {
-      title: "RPJMD",
-      desc: "RPJMD Kab. TTS 2024-2029",
-      file: "/informasi/RPJMD-Kab-TTS-Tahun-2025-2029.pdf",
-    },
-    {
-      title: "RENSTRA",
-      desc: "Rencana Strategis",
-      file: "/informasi/renstra.pdf",
-    },
-    {
-      title: "RENJA",
-      desc: "Rencana Kerja",
-      file: "/informasi/renja.pdf",
-    },
-    {
-      title: "RKA",
-      desc: "Rencana Kerja Anggaran",
-      file: "/informasi/rka.pdf",
-    },
-    {
-      title: "DPA",
-      desc: "Dokumen Pelaksanaan Anggaran",
-      file: "/informasi/dpa.pdf",
-    },
-    {
-      title: "LKPJ",
-      desc: "Laporan Kinerja Pemerintah Daerah",
-      file: "/informasi/lkpj.pdf",
-    },
-    {
-      title: "LAKIP",
-      desc: "Laporan Akuntabilitas Kinerja",
-      file: "/informasi/lakip.pdf",
-    },
-  ];
+  // ================= FETCH DATA =================
+  const fetchData = async () => {
+    const { data, error } = await supabase
+      .from("informasi_bidang")
+      .select("*")
+      .eq("kategori", "regulasi")
+      .eq("type", "pdf")
 
-  // PAGINATION LOGIC
-  const totalPages = Math.ceil(dokumen.length / perPage);
+    if (error) {
+      console.log(error.message)
+      return
+    }
 
-  const paginated = dokumen.slice(
-    (page - 1) * perPage,
-    page * perPage
-  );
+    setItems(data || [])
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  // ================= SORT =================
+  const sorted = useMemo(() => {
+    const copy = [...items]
+
+    return copy.sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime()
+      const dateB = new Date(b.created_at).getTime()
+
+      return sort === "desc"
+        ? dateB - dateA
+        : dateA - dateB
+    })
+  }, [items, sort])
+
+  // ================= PAGINATION =================
+  const paginated = useMemo(() => {
+    const start = (page - 1) * ITEMS_PER_PAGE
+    return sorted.slice(start, start + ITEMS_PER_PAGE)
+  }, [sorted, page])
+
+  const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE)
+
+  // ================= HANDLE SORT =================
+  const handleSort = (value: SortType) => {
+    setSort(value)
+    setPage(1)
+    scrollToTop()
+  }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background">
 
       {/* HEADER */}
       <section className="bg-primary py-20 text-center text-primary-foreground">
-        <h1 className="text-4xl font-bold">
-          Regulasi & Peraturan
-        </h1>
-        <p className="mt-3 font-bold">
-          Dinas Komunikasi & Informatika Kab. Timor Tengah Selatan
+        <h1 className="text-4xl font-bold">Regulasi</h1>
+        <p className="mt-4 text-primary-foreground/80">
+          Kumpulan dokumen regulasi dalam bentuk PDF
         </p>
       </section>
 
       {/* CONTENT */}
       <section className="py-16">
-        <div className="container mx-auto max-w-6xl px-4">
+        <div className="container mx-auto max-w-5xl px-4">
 
-          {/* GRID */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* FILTER */}
+          <div className="mb-6 flex justify-center gap-3">
+            <button
+              onClick={() => handleSort("desc")}
+              className={`rounded-full border px-4 py-2 ${
+                sort === "desc"
+                  ? "bg-primary text-white"
+                  : "hover:bg-accent"
+              }`}
+            >
+              Terbaru
+            </button>
 
-            {paginated.map((item, index) => (
+            <button
+              onClick={() => handleSort("asc")}
+              className={`rounded-full border px-4 py-2 ${
+                sort === "asc"
+                  ? "bg-primary text-white"
+                  : "hover:bg-accent"
+              }`}
+            >
+              Terlama
+            </button>
+          </div>
+
+          {/* LIST */}
+          <div className="space-y-4">
+            {paginated.map((item) => (
               <div
-                key={index}
-                className="rounded-2xl border bg-card p-5 shadow-sm transition hover:shadow-md"
+                key={item.id}
+                className="flex items-center justify-between rounded-xl border bg-card p-5"
               >
+                {/* LEFT */}
+                <div className="flex items-center gap-4">
+                  <FileText className="h-10 w-10 text-primary" />
 
-                {/* ICON */}
-                <div className="flex h-40 flex-col items-center justify-center gap-2 rounded-xl bg-muted">
-                  <FileText className="h-12 w-12 text-primary" />
+                  <div>
+                    <h3 className="font-semibold text-primary">
+                      {item.title}
+                    </h3>
 
-                  <button
-                    onClick={() => setModalPdf(item.file)}
-                    className="flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-                  >
-                    <Eye className="h-4 w-4" />
-                    Preview PDF
-                  </button>
+                    {item.description && (
+                      <p className="text-sm text-muted-foreground">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
-                {/* CONTENT */}
-                <div className="mt-4">
-                  <h3 className="text-lg font-bold text-primary">
-                    {item.title}
-                  </h3>
-
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {item.desc}
-                  </p>
-
-                  <a
-                    href={item.file}
-                    download
-                    className="mt-3 flex items-center gap-2 text-sm font-medium text-primary hover:underline"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download
-                  </a>
-                </div>
+                {/* DOWNLOAD */}
+                <a
+                  href={item.pdf_url || "#"}
+                  target="_blank"
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
+                >
+                  <Download className="h-4 w-4" />
+                  Download
+                </a>
               </div>
             ))}
-
           </div>
 
           {/* PAGINATION */}
           {totalPages > 1 && (
-            <div className="mt-10 flex items-center justify-center gap-4">
+            <div className="mt-10 flex items-center justify-center gap-2">
 
+              {/* PREV */}
               <button
-                onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                className="rounded-md border px-3 py-2 hover:bg-accent"
+                onClick={() => {
+                  setPage((p) => Math.max(p - 1, 1))
+                  scrollToTop()
+                }}
+                disabled={page === 1}
+                className="rounded-lg border px-3 py-2 disabled:opacity-50"
               >
                 <ChevronLeft />
               </button>
 
-              <span className="text-sm text-muted-foreground">
-                Page {page} of {totalPages}
-              </span>
+              {/* NUMBERS */}
+              {Array.from(
+                { length: totalPages },
+                (_, i) => i + 1
+              )
+                .slice(
+                  Math.max(0, page - 2),
+                  Math.min(totalPages, page + 1)
+                )
+                .map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => {
+                      setPage(p)
+                      scrollToTop()
+                    }}
+                    className={`h-10 w-10 rounded-lg border ${
+                      page === p
+                        ? "bg-primary text-white"
+                        : "hover:bg-accent"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
 
+              {/* NEXT */}
               <button
-                onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-                className="rounded-md border px-3 py-2 hover:bg-accent"
+                onClick={() => {
+                  setPage((p) => Math.min(p + 1, totalPages))
+                  scrollToTop()
+                }}
+                disabled={page === totalPages}
+                className="rounded-lg border px-3 py-2 disabled:opacity-50"
               >
                 <ChevronRight />
               </button>
@@ -160,30 +220,6 @@ export default function RegulasiPage() {
 
         </div>
       </section>
-
-      {/* PDF MODAL */}
-      {modalPdf && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
-          onClick={() => setModalPdf(null)}
-        >
-          <button className="absolute right-6 top-6 text-white">
-            <X />
-          </button>
-
-          <div
-            className="h-[85vh] w-full max-w-5xl overflow-hidden rounded-xl bg-white"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <embed
-              src={modalPdf}
-              type="application/pdf"
-              className="h-full w-full"
-            />
-          </div>
-        </div>
-      )}
-
     </div>
-  );
+  )
 }

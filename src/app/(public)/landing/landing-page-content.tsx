@@ -5,7 +5,6 @@ import { HeroSection } from '@/components/landing/hero-section'
 import { QuickAccessSection } from '@/components/landing/quick-access-section'
 import { AboutSection } from '@/components/landing/about-section'
 import { OrganizationSection } from "@/components/landing/organization-section";
-// import { NewsSection } from "@/components/landing/news-secton";
 import { GallerySection } from "@/components/landing/gallery-section";
 
 export function LandingPageContent() {
@@ -21,7 +20,6 @@ export function LandingPageContent() {
         <QuickAccessSection />
         <AboutSection />
         <OrganizationSection />
-        {/* <NewsSection /> */}
         <GallerySection />
       </main>
     </div>

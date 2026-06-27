@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/form"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
 
 const loginFormSchema = z.object({
   email: z.string().email("Email tidak valid"),
@@ -47,14 +48,28 @@ export function LoginForm1({
   })
 
   const onSubmit = async (values: LoginFormValues) => {
+  console.log("INPUT LOGIN:", values) // 👈 taruh di sini
     setLoading(true)
 
-    // simulasi login (frontend dulu)
-    setTimeout(() => {
-      console.log("Login data:", values)
-      setLoading(false)
-      router.push("/admin")
-    }, 800)
+    const { error } = await supabase.auth.signInWithPassword({
+      email: values.email,
+      password: values.password,
+    })
+  console.log("SUPABASE ERROR:", error) // 👈 ini penting
+
+    setLoading(false)
+
+    if (error) {
+      form.setError("email", {
+        message: "Login gagal: " + error.message,
+      })
+      form.setError("password", {
+        message: "Periksa email atau password Anda",
+      })
+      return
+    }
+
+    router.push("/dashboard")
   }
 
   return (

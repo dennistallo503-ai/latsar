@@ -1,8 +1,33 @@
 "use client";
 
-import Link from "next/link";
+import Image from "next/image";
 
-import { quickLinks } from "./home/quick-links";
+const quickAccess = [
+  {
+    title: "Kementerian Komunikasi dan Digital",
+    description: "Website resmi Kementerian Komunikasi dan Digital Republik Indonesia.",
+    href: "https://www.komdigi.go.id/",
+    image: "/logo/komdigi-logo.svg",
+  },
+  {
+    title: "Pemerintah Provinsi Nusa Tenggara Timur",
+    description: "Website resmi Pemerintah Provinsi Nusa Tenggara Timur.",
+    href: "https://nttprov.go.id/",
+    image: "/logo/ntt.svg", 
+  },
+  {
+    title: "Pemerintah Kabupaten Timor Tengah Selatan",
+    description: "Website resmi Pemerintah Kabupaten Timor Tengah Selatan.",
+    href: "https://ttskab.go.id/",
+    image: "/logo/tts-logo.svg",
+  },
+  {
+    title: "SIPD RI",
+    description: "Sistem Informasi Pemerintahan Daerah Republik Indonesia.",
+    href: "https://sipd-ri.kemendagri.go.id/auth/login",
+    image: "/logo/sipd.svg",
+  },
+];
 
 export function QuickAccessSection() {
   return (
@@ -15,35 +40,40 @@ export function QuickAccessSection() {
           </h2>
 
           <p className="mt-2 text-muted-foreground">
-            Temukan informasi dan layanan dengan mudah.
+            Akses langsung ke website mitra dan layanan pemerintahan.
           </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {quickAccess.map((item) => (
+            <a
+              key={item.title}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group rounded-xl border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lg"
+            >
+              <div className="mb-5 flex justify-center">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  width={72}
+                  height={72}
+                  className="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
 
-          {quickLinks.map((item) => {
-            const Icon = item.icon;
+              <h3 className="text-center font-semibold">
+                {item.title}
+              </h3>
 
-            return (
-              <Link
-                key={item.title}
-                href={item.href}
-                className="group rounded-xl border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lg"
-              >
-                <Icon className="mb-4 h-10 w-10 text-primary" />
-
-                <h3 className="font-semibold">
-                  {item.title}
-                </h3>
-
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {item.description}
-                </p>
-              </Link>
-            );
-          })}
-
+              <p className="mt-2 text-center text-sm text-muted-foreground">
+                {item.description}
+              </p>
+            </a>
+          ))}
         </div>
+
       </div>
     </section>
   );

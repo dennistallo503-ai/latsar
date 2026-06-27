@@ -5,6 +5,7 @@ export default function IkpPage() {
     <UploadTableModule
       title="Informasi & Komunikasi Publik"
       description="Kelola data dokumen dan gambar Bidang Informasi & Komunikasi Publik."
+      category="ikp"
     />
   )
 }

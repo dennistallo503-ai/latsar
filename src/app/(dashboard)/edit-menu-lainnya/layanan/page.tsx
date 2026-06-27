@@ -1,7 +1,11 @@
+import MediaCMS from "../components/MediaCms"
+
 export default function Page() {
   return (
-    <div>
-      <h1>Edit Menu Layanan</h1>
-    </div>
+    <MediaCMS
+      category="layanan"
+      title="Layanan"
+      description="Kelola gambar layanan website"
+    />
   )
 }

@@ -1,151 +1,250 @@
 "use client"
 
-import { useState } from "react"
-import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { supabase } from "@/lib/supabaseClient"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Save, Upload } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Save, Trash } from "lucide-react"
 
-export default function HeroContentPage() {
-  const [heroData, setHeroData] = useState({
-    image: "/placeholder.svg",
-    heading: "Selamat Datang di Website Resmi DLH Kabupaten Timor Tengah Selatan",
-    paragraph:
-      "Menyediakan informasi, layanan, dan berbagai kegiatan Dinas Lingkungan Hidup Kabupaten Timor Tengah Selatan.",
+export default function HeroAdminPage() {
+  const [page, setPage] = useState("home")
+  const [loading, setLoading] = useState(false)
+  const [heroes, setHeroes] = useState<any[]>([])
+
+  const [form, setForm] = useState({
+    id: "",
+    heading: "",
+    paragraph: "",
+    image: "",
+    sort_order: 0,
   })
 
-  const handleImageChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0]
+  // FETCH DATA
+  const fetchHeroes = async (selectedPage = page) => {
+    const { data } = await supabase
+      .from("hero_sections")
+      .select("*")
+      .eq("page", selectedPage)
+      .order("sort_order", { ascending: true })
 
-    if (file) {
-      setHeroData({
-        ...heroData,
-        image: URL.createObjectURL(file),
-      })
-    }
+    setHeroes(data || [])
   }
 
-  const handleSave = () => {
-    console.log(heroData)
+  useEffect(() => {
+    fetchHeroes()
+  }, [page])
 
-    alert("Data hero berhasil disimpan")
+  // UPLOAD IMAGE
+  const uploadImage = async (file: File) => {
+    const fileName = `${Date.now()}-${file.name}`
+
+    const { data, error } = await supabase.storage
+      .from("images")
+      .upload(`hero/${fileName}`, file)
+
+    if (error) {
+      alert(error.message)
+      return
+    }
+
+    const { data: url } = supabase.storage
+      .from("images")
+      .getPublicUrl(data.path)
+
+    setForm((prev) => ({ ...prev, image: url.publicUrl }))
+  }
+
+  // SAVE
+  const saveHero = async () => {
+    setLoading(true)
+
+    let query
+
+    if (form.id) {
+      query = supabase
+        .from("hero_sections")
+        .update({
+          heading: form.heading,
+          paragraph: form.paragraph,
+          image_url: form.image,
+          sort_order: form.sort_order,
+          updated_at: new Date(),
+        })
+        .eq("id", form.id)
+    } else {
+      query = supabase.from("hero_sections").insert({
+        page,
+        heading: form.heading,
+        paragraph: form.paragraph,
+        image_url: form.image,
+        sort_order: form.sort_order,
+      })
+    }
+
+    const { error } = await query
+
+    setLoading(false)
+
+    if (error) {
+      alert(error.message)
+      return
+    }
+
+    setForm({
+      id: "",
+      heading: "",
+      paragraph: "",
+      image: "",
+      sort_order: 0,
+    })
+
+    fetchHeroes()
+  }
+
+  // EDIT
+  const editHero = (h: any) => {
+    setForm({
+      id: h.id,
+      heading: h.heading,
+      paragraph: h.paragraph,
+      image: h.image_url,
+      sort_order: h.sort_order,
+    })
+  }
+
+  // DELETE
+  const deleteHero = async (id: string) => {
+    await supabase.from("hero_sections").delete().eq("id", id)
+    fetchHeroes()
   }
 
   return (
     <div className="space-y-6">
-      {/* Heading */}
+
+      {/* HEADER */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Hero Beranda
-        </h1>
+        <h1 className="text-3xl font-bold">Edit Hero</h1>
         <p className="text-muted-foreground">
-          Kelola gambar, judul dan deskripsi hero pada halaman beranda.
+          Kelola hero section untuk halaman website
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Form */}
-        <Card>
-          <CardContent className="space-y-6 pt-6">
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Gambar Hero
-              </label>
-
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Heading
-              </label>
-
-              <Input
-                value={heroData.heading}
-                onChange={(e) =>
-                  setHeroData({
-                    ...heroData,
-                    heading: e.target.value,
-                  })
-                }
-                placeholder="Masukkan judul hero"
-              />
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm font-medium">
-                Paragraph
-              </label>
-
-              <Textarea
-                rows={6}
-                value={heroData.paragraph}
-                onChange={(e) =>
-                  setHeroData({
-                    ...heroData,
-                    paragraph: e.target.value,
-                  })
-                }
-                placeholder="Masukkan deskripsi hero"
-              />
-            </div>
-
-            <Button
-              onClick={handleSave}
-              className="w-full"
-            >
-              <Save className="mr-2 h-4 w-4" />
-              Simpan Perubahan
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Preview */}
-        <Card>
-          <CardContent className="pt-6">
-            <h2 className="mb-4 text-lg font-semibold">
-              Preview Hero
-            </h2>
-
-            <div className="relative overflow-hidden rounded-xl border">
-              <div className="relative h-[420px]">
-                <Image
-                  src={heroData.image}
-                  alt="Preview Hero"
-                  fill
-                  className="object-cover"
-                />
-
-                <div className="absolute inset-0 bg-black/50" />
-
-                <div className="absolute inset-0 flex items-center">
-                  <div className="max-w-2xl p-8 text-white">
-                    <h1 className="mb-4 text-4xl font-bold">
-                      {heroData.heading}
-                    </h1>
-
-                    <p className="text-lg leading-relaxed">
-                      {heroData.paragraph}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <p className="mt-3 text-sm text-muted-foreground">
-              Tampilan ini merupakan simulasi hero pada halaman beranda.
-            </p>
-          </CardContent>
-        </Card>
+      {/* PAGE SWITCH (HANYA HOME) */}
+      <div className="flex gap-3">
+        <Button
+          variant={page === "home" ? "default" : "outline"}
+          onClick={() => setPage("home")}
+        >
+          HOME
+        </Button>
       </div>
+
+      {/* FORM */}
+      <Card>
+        <CardContent className="space-y-4 pt-6">
+
+          {/* IMAGE */}
+          <div>
+            <label className="text-sm font-medium">Gambar Hero</label>
+            <Input type="file" onChange={(e) => {
+              const file = e.target.files?.[0]
+              if (file) uploadImage(file)
+            }} />
+          </div>
+
+          {/* TITLE */}
+          <div>
+            <label className="text-sm font-medium">Judul Hero</label>
+            <Input
+              placeholder="Masukkan judul hero"
+              value={form.heading}
+              onChange={(e) =>
+                setForm({ ...form, heading: e.target.value })
+              }
+            />
+          </div>
+
+          {/* DESCRIPTION */}
+          <div>
+            <label className="text-sm font-medium">Deskripsi</label>
+            <Textarea
+              placeholder="Masukkan deskripsi hero"
+              value={form.paragraph}
+              onChange={(e) =>
+                setForm({ ...form, paragraph: e.target.value })
+              }
+            />
+          </div>
+
+          {/* SORT ORDER */}
+          <div>
+            <label className="text-sm font-medium">
+              Urutan Tampilan (Sort Order)
+            </label>
+            <Input
+              type="number"
+              placeholder="Contoh: 1, 2, 3"
+              value={form.sort_order}
+              onChange={(e) =>
+                setForm({ ...form, sort_order: Number(e.target.value) })
+              }
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Angka kecil akan tampil lebih dulu
+            </p>
+          </div>
+
+          {/* BUTTON */}
+          <Button
+            onClick={saveHero}
+            disabled={loading}
+            className="w-full"
+          >
+            <Save className="w-4 h-4 mr-2" />
+            {form.id ? "Update Hero" : "Create Hero"}
+          </Button>
+
+        </CardContent>
+      </Card>
+
+      {/* LIST */}
+      <div className="grid gap-4">
+
+        {heroes.map((h) => (
+          <Card key={h.id}>
+            <CardContent className="flex justify-between items-center pt-6">
+
+              <div>
+                <p className="font-bold">{h.heading}</p>
+                <p className="text-sm text-muted-foreground">
+                  Order: {h.sort_order}
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => editHero(h)}
+                >
+                  Edit
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  onClick={() => deleteHero(h.id)}
+                >
+                  <Trash className="w-4 h-4" />
+                </Button>
+              </div>
+
+            </CardContent>
+          </Card>
+        ))}
+
+      </div>
+
     </div>
   )
 }

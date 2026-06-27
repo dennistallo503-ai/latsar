@@ -1,78 +1,86 @@
 "use client";
 
-import React from "react";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+
+import { AppSidebar } from "../../components/app-sidebar";
+import { SiteHeader } from "../../components/site-header";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { ThemeCustomizer, ThemeCustomizerTrigger } from "@/components/theme-customizer";
-import { UpgradeToProButton } from "@/components/upgrade-to-pro-button";
-import { useSidebarConfig } from "@/hooks/use-sidebar-config";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [themeCustomizerOpen, setThemeCustomizerOpen] = React.useState(false);
-  const { config } = useSidebarConfig();
+  const router = useRouter();
 
+  const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
+
+  // ================= CHECK AUTH ON LOAD =================
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data, error } = await supabase.auth.getUser();
+
+      if (error || !data?.user) {
+        setAuthorized(false);
+        setLoading(false);
+        router.replace("/landing");
+        return;
+      }
+
+      setAuthorized(true);
+      setLoading(false);
+    };
+
+    checkUser();
+  }, [router]);
+
+  // ================= LISTEN AUTH CHANGE (REALTIME) =================
+  useEffect(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (!session?.user) {
+          setAuthorized(false);
+          router.replace("/landing");
+        }
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, [router]);
+
+  // ================= LOADING STATE =================
+  if (loading || !authorized) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">
+            Memeriksa akses...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ================= RENDER ADMIN LAYOUT =================
   return (
-    <SidebarProvider
-      style={{
-        "--sidebar-width": "16rem",
-        "--sidebar-width-icon": "3rem",
-        "--header-height": "calc(var(--spacing) * 14)",
-      } as React.CSSProperties}
-      className={config.collapsible === "none" ? "sidebar-none-mode" : ""}
-    >
-      {config.side === "left" ? (
-        <>
-          <AppSidebar
-            variant={config.variant}
-            collapsible={config.collapsible}
-            side={config.side}
-          />
-          <SidebarInset>
-            <SiteHeader />
-            <div className="flex flex-1 flex-col">
-              <div className="@container/main flex flex-1 flex-col gap-2">
-                <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                  {children}
-                </div>
-              </div>
-            </div>
-            <SiteFooter />
-          </SidebarInset>
-        </>
-      ) : (
-        <>
-          <SidebarInset>
-            <SiteHeader />
-            <div className="flex flex-1 flex-col">
-              <div className="@container/main flex flex-1 flex-col gap-2">
-                <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                  {children}
-                </div>
-              </div>
-            </div>
-            <SiteFooter />
-          </SidebarInset>
-          <AppSidebar
-            variant={config.variant}
-            collapsible={config.collapsible}
-            side={config.side}
-          />
-        </>
-      )}
+    <SidebarProvider>
+      <AppSidebar />
 
-      {/* Theme Customizer */}
-      <ThemeCustomizerTrigger onClick={() => setThemeCustomizerOpen(true)} />
-      <ThemeCustomizer
-        open={themeCustomizerOpen}
-        onOpenChange={setThemeCustomizerOpen}
-      />
-      <UpgradeToProButton />
+      <SidebarInset className="flex flex-col">
+        {/* HEADER */}
+        <SiteHeader />
+
+        {/* CONTENT */}
+        <main className="flex-1 overflow-y-auto p-6">
+          {children}
+        </main>
+      </SidebarInset>
     </SidebarProvider>
   );
 }
