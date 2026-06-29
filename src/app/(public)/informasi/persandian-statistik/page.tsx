@@ -5,7 +5,7 @@ export default function Page() {
     <PublicCMS
       title="Persandian & Statistik"
       description="Data Persandian dan Statistik Daerah"
-      category="persandian-statistik"
+      category="persandian"
     />
   )
 }
