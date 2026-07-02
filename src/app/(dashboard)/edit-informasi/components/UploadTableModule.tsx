@@ -35,10 +35,12 @@ export default function UploadTableModule({
   category,
 }: Props) {
   // ================= SAFE STATE =================
+  const [docDesc, setDocDesc] = useState<string>("")
   const [docTitle, setDocTitle] = useState<string>("")
   const [docLink, setDocLink] = useState<string>("")
 
   const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imgTitle, setImgTitle] = useState("")
   const [imageDesc, setImageDesc] = useState<string>("")
 
   const [items, setItems] = useState<Item[]>([])
@@ -114,7 +116,7 @@ export default function UploadTableModule({
         kategori: category,
         type: "pdf",
         title: docTitle,
-        description: docTitle,
+        description: docDesc,
         pdf_url: docLink,
       })
 
@@ -124,6 +126,7 @@ export default function UploadTableModule({
         .from("informasi_bidang")
         .update({
           title: docTitle,
+          description: docDesc, // ✅ FIX
           pdf_url: docLink,
         })
         .eq("id", editId)
@@ -147,7 +150,7 @@ export default function UploadTableModule({
         const { error } = await supabase.from("informasi_bidang").insert({
           kategori: category,
           type: "image",
-          title: imageDesc,
+          title: imgTitle,
           description: imageDesc,
           image_url: url,
         })
@@ -157,7 +160,7 @@ export default function UploadTableModule({
         const { error } = await supabase
           .from("informasi_bidang")
           .update({
-            title: imageDesc,
+            title: imgTitle,
             description: imageDesc,
             image_url: url,
           })
@@ -234,6 +237,12 @@ export default function UploadTableModule({
               value={docLink}
               onChange={(e) => setDocLink(e.target.value)}
               placeholder="Link Google Drive"
+            />
+
+            <Textarea
+              value={docDesc}
+              onChange={(e) => setDocDesc(e.target.value)}
+              placeholder="Deskripsi PDF"
             />
 
             <div className="flex gap-2">
@@ -343,7 +352,9 @@ export default function UploadTableModule({
                         if (item.type === "pdf") {
                           setDocTitle(item.title)
                           setDocLink(item.pdf_url || "")
+                          setDocDesc(item.description || "")
                         } else {
+                          setImgTitle(item.title)
                           setImageDesc(item.description || "")
                         }
                         setEditId(item.id)

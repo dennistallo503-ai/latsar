@@ -16,6 +16,7 @@ type FormState = {
   wakil_image: string
   visi: string
   misi: string[]
+  period: string
 }
 
 export default function VisionMissionAdminPage() {
@@ -29,6 +30,7 @@ export default function VisionMissionAdminPage() {
     wakil_image: "",
     visi: "",
     misi: [],
+    period: "",
   })
 
   // ========================
@@ -56,6 +58,7 @@ export default function VisionMissionAdminPage() {
           wakil_image: data.wakil_image || "",
           visi: data.visi || "",
           misi: Array.isArray(data.misi) ? data.misi : [],
+          period: data.period || "",
         })
       }
     }
@@ -179,6 +182,7 @@ export default function VisionMissionAdminPage() {
       wakil_image: form.wakil_image,
       visi: form.visi,
       misi: form.misi,
+      period: form.period,
       updated_at: new Date().toISOString(),
     }
 
@@ -318,7 +322,23 @@ export default function VisionMissionAdminPage() {
               )}
             </CardContent>
           </Card>
+          {/* PERIODE */}
+          <Card>
+            <CardContent className="space-y-3 pt-6">
+              <h2 className="font-semibold">Periode</h2>
 
+              <Input
+                value={form.period}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    period: e.target.value,
+                  })
+                }
+                placeholder="Contoh: 2024–2029"
+              />
+            </CardContent>
+          </Card>
           {/* VISI */}
           <Card>
             <CardContent className="space-y-3 pt-6">

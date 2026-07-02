@@ -24,15 +24,6 @@ import { Button } from "@/components/ui/button";
 const data = {
   navGroups: [
     {
-      label: "Dashboard",
-      items: [
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-        },
-      ],
-    },
-    {
       label: "Halaman",
       items: [
         {

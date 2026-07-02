@@ -12,6 +12,7 @@ type VisionMission = {
   wakil_image: string
   visi: string
   misi: string[]
+  period: string 
 }
 
 export default function VisionMissionPage() {
@@ -43,6 +44,7 @@ export default function VisionMissionPage() {
             wakil_image: data.wakil_image || "",
             visi: data.visi || "",
             misi: Array.isArray(data.misi) ? data.misi : [],
+            period: data.period,
           }
         : null
 
@@ -78,11 +80,22 @@ export default function VisionMissionPage() {
       <section className="relative z-10 mt-8 pb-10">
         <div className="container mx-auto max-w-5xl px-4">
           <div className="rounded-3xl border bg-card p-8 shadow-xl">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl md:text-3xl font-bold">
+                Bupati & Wakil Bupati Kabupaten Timor Tengah Selatan
+              </h2>
+              <p className="text-muted-foreground mt-2">
+                {data.period}
+              </p>
+            </div>
 
             <div className="grid gap-10 md:grid-cols-2">
 
               {/* BUPATI */}
               <div className="text-center">
+                <p className="mb-3 text-sm font-semibold text-primary">
+                  Bupati Timor Tengah Selatan
+                </p>
                 <div className="relative mx-auto h-56 w-44 overflow-hidden rounded-2xl border">
                   <Image
                     src={data.bupati_image || "/placeholder.svg"}
@@ -92,13 +105,16 @@ export default function VisionMissionPage() {
                   />
                 </div>
 
-                <h3 className="mt-4 text-xl font-bold">
+                <h3 className="mt-4 text-sm font-semibold text-primary">
                   {data.bupati_name || "-"}
                 </h3>
               </div>
 
               {/* WAKIL */}
               <div className="text-center">
+                <p className="mb-3 text-sm font-semibold text-primary">
+                  Wakil Bupati Timor Tengah Selatan
+                </p>
                 <div className="relative mx-auto h-56 w-44 overflow-hidden rounded-2xl border">
                   <Image
                     src={data.wakil_image || "/placeholder.svg"}
@@ -108,7 +124,7 @@ export default function VisionMissionPage() {
                   />
                 </div>
 
-                <h3 className="mt-4 text-xl font-bold">
+                <h3 className="mt-4 text-sm font-semibold text-primary">
                   {data.wakil_name || "-"}
                 </h3>
               </div>
