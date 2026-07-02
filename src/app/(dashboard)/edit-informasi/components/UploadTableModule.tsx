@@ -304,6 +304,12 @@ export default function UploadTableModule({
             />
 
             <Input
+              value={imgTitle}
+              onChange={(e) => setImgTitle(e.target.value)}
+              placeholder="Judul gambar"
+            />
+
+            <Input
               value={imageDesc}
               onChange={(e) => setImageDesc(e.target.value)}
               placeholder="Deskripsi gambar"
