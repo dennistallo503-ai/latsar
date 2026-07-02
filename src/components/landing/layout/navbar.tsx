@@ -295,9 +295,9 @@ export function Navbar() {
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 dark:rotate-0 dark:scale-100 transition-all" />
           </Button>
 
-          <Button asChild>
+          {/* <Button asChild>
             <Link href="/sign-in">Login</Link>
-          </Button>
+          </Button> */}
 
         </div>
 

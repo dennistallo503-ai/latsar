@@ -69,7 +69,7 @@ export function LoginForm1({
       return
     }
 
-    router.push("/dashboard")
+    router.push("/edit-beranda")
   }
 
   return (
