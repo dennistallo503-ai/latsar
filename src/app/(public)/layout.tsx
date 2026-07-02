@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/landing/layout/navbar";
 import { Footer } from "@/components/landing/layout/footer";
-import { ScrollToTop } from "@/components/scroll-to-top";
+import { FloatingAction } from "@/components/floating-action"
 
 export default function PublicLayout({
   children,
@@ -12,7 +12,10 @@ export default function PublicLayout({
       <Navbar />
       <main>{children}</main>
       <Footer />
-      <ScrollToTop />
+      <FloatingAction
+        phoneNumber="+6285338851818"
+        message="Halo Admin Kominfo, saya ingin mendapatkan informasi."
+      />
     </>
   );
 }

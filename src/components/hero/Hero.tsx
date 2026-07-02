@@ -277,8 +277,8 @@ export default function Hero({
       {/* CONTENT */}
       {/* ========================================= */}
 
-      <div className="relative z-20 flex h-full items-end">
-        <div className="mx-auto w-full max-w-7xl px-6 pb-6 lg:px-8 lg:pb-10">
+      <div className="relative z-20 flex h-full items-center">
+        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
           <motion.div
             initial={{
               opacity: 0,
@@ -304,7 +304,6 @@ export default function Hero({
             p-5
             sm:p-6
             lg:p-8
-            backdrop-blur-md
             "
           >
             {subtitle && (
