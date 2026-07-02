@@ -172,7 +172,7 @@ export function Footer() {
           <div className="flex gap-4">
 
             <Link
-              href="/privacy"
+              href="/privacy-policy"
               className="hover:text-primary"
             >
               Kebijakan Privasi
