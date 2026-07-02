@@ -52,7 +52,7 @@ const units = [
     description:
       "Melaksanakan urusan persandian serta pengelolaan statistik sektoral daerah.",
     icon: ShieldCheck,
-    href: "/informasi/persandian-statistik",
+    href: "/informasi/ps",
   },
 ];
 
