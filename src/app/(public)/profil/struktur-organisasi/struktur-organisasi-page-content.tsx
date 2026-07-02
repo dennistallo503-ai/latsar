@@ -1,12 +1,9 @@
 "use client"
 
 import React from 'react'
-import StrukutrOrganisasiPage from '@/components/profil/organization-content'
+// import StrukutrOrganisasiPage from '@/components/profil/organization-content'
 import {Hero} from '@/components/hero/';
-import {
-  LandingThemeCustomizer,
-  LandingThemeCustomizerTrigger
-} from '@/components/landing/landing-theme-customizer'
+import PublicCMS from "../../informasi/public/PublicCMS"
 
 export function StrukturOrganisasiPageContent() {
   const [themeCustomizerOpen, setThemeCustomizerOpen] = React.useState(false)
@@ -15,24 +12,13 @@ export function StrukturOrganisasiPageContent() {
     <div className="min-h-screen bg-background">
 
       <main>
-        <>
-          <Hero 
+        <PublicCMS
             title="Struktur Organisasi"
             description="Dinas Kominfo Kabupaten TTS"
+            category="struktur-organisasi"
           />
-        </>
-        <StrukutrOrganisasiPage />
+        {/* <StrukutrOrganisasiPage /> */}
       </main>
-
-      {/* Theme Customizer */}
-      {/* <LandingThemeCustomizerTrigger
-        onClick={() => setThemeCustomizerOpen(true)}
-      /> */}
-
-      {/* <LandingThemeCustomizer
-        open={themeCustomizerOpen}
-        onOpenChange={setThemeCustomizerOpen}
-      /> */}
     </div>
   )
 }

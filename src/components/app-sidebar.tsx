@@ -47,7 +47,7 @@ const data = {
             { title: "Keuangan", url: "/edit-informasi/keuangan" },
             { title: "IKP", url: "/edit-informasi/ikp" },
             { title: "TIK", url: "/edit-informasi/tik" },
-            { title: "Persandian & Statistik", url: "/edit-informasi/persandian" },
+            { title: "PS", url: "/edit-informasi/persandian" },
             { title: "Regulasi", url: "/edit-informasi/regulasi" },
           ],
         },
