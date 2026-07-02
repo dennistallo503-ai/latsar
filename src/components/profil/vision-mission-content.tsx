@@ -72,20 +72,10 @@ export default function VisionMissionPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
 
-      {/* HERO */}
-      <section className="relative py-24 bg-gradient-to-r from-primary to-primary/70 text-white">
-        <div className="container mx-auto text-center px-4">
-          <h1 className="text-4xl md:text-6xl font-bold">
-            Visi & Misi
-          </h1>
-          <p className="mt-4 text-white/90">
-            Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan
-          </p>
-        </div>
-      </section>
+      {/* DISINI PANGGIL HERO-PAGES */}
 
       {/* PIMPINAN */}
-      <section className="-mt-12 pb-10">
+      <section className="relative z-10 mt-8 pb-10">
         <div className="container mx-auto max-w-5xl px-4">
           <div className="rounded-3xl border bg-card p-8 shadow-xl">
 

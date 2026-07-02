@@ -10,13 +10,13 @@ const quickAccess = [
     image: "/logo/komdigi-logo.svg",
   },
   {
-    title: "Pemerintah Provinsi Nusa Tenggara Timur",
+    title: "Pemerintah Provinsi NTT",
     description: "Website resmi Pemerintah Provinsi Nusa Tenggara Timur.",
     href: "https://nttprov.go.id/",
     image: "/logo/NTT.svg", 
   },
   {
-    title: "Pemerintah Kabupaten Timor Tengah Selatan",
+    title: "Pemerintah Kabupaten TTS",
     description: "Website resmi Pemerintah Kabupaten Timor Tengah Selatan.",
     href: "https://ttskab.go.id/",
     image: "/logo/tts-logo.svg",

@@ -64,11 +64,11 @@ export function GallerySection() {
           </Badge>
 
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Galeri Kegiatan
+            Galeri Diskominfo
           </h2>
 
           <p className="mt-4 text-lg text-muted-foreground">
-            Dokumentasi kegiatan, program, dan layanan Diskominfo Kabupaten TTS.
+            Dokumentasi kegiatan Diskominfo Kabupaten TTS.
           </p>
         </div>
 

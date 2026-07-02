@@ -102,22 +102,28 @@ export function Footer() {
             <div className="flex justify-center gap-3">
 
               <Link
-                href="#"
+                href="https://www.facebook.com/share/1CtruBivmg/"
                 className="rounded-lg border p-2 transition hover:bg-primary hover:text-white"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Facebook className="h-5 w-5" />
               </Link>
 
               <Link
-                href="#"
+                href="https://www.instagram.com/diskominfo_tts?igsh=cGxqbzljNDBkcGpi"
                 className="rounded-lg border p-2 transition hover:bg-primary hover:text-white"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Instagram className="h-5 w-5" />
               </Link>
 
               <Link
-                href="#"
+                href="https://youtube.com/@diskominfokabtts8341?si=N1_ruEEKsJma88dZ"
                 className="rounded-lg border p-2 transition hover:bg-primary hover:text-white"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Youtube className="h-5 w-5" />
               </Link>

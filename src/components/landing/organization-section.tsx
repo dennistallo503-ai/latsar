@@ -58,7 +58,7 @@ const units = [
 
 export function OrganizationSection() {
   return (
-    <section className="bg-muted/30 py-24">
+    <section className="bg-muted/30 py-16">
       <div className="container mx-auto px-4">
 
         {/* Header */}
@@ -99,7 +99,7 @@ export function OrganizationSection() {
                   hover:shadow-xl
                 "
               >
-                <CardContent className="p-8">
+                <CardContent className="py-1">
 
                   <div className="mb-6 flex items-center justify-between">
 
@@ -155,7 +155,7 @@ export function OrganizationSection() {
                   hover:shadow-xl
                 "
               >
-                <CardContent className="p-8">
+                <CardContent className="py-1">
 
                   <div className="mb-6 flex items-center justify-between">
 

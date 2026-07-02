@@ -3,7 +3,18 @@
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
-import { FileText, Download, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { ChevronLeft, ChevronRight, FileText, Download } from "lucide-react"
+
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Captions from "yet-another-react-lightbox/plugins/captions";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+
+import {Hero} from '@/components/hero/';
+
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/captions.css";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
 
 type Item = {
   id: string
@@ -36,17 +47,7 @@ export default function PublicCMS({
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
     // LIGHTBOX STATE (FIX IMPORTANT)
-  const [lightbox, setLightbox] = useState({
-    open: false,
-    src: "",
-    title: "",
-  })
-
-  const [currentIndex, setCurrentIndex] = useState(0)
-
-  const [scale, setScale] = useState(1)
-  const [touchStartX, setTouchStartX] = useState<number | null>(null)
-  const [lastDistance, setLastDistance] = useState<number | null>(null)
+const [index, setIndex] = useState(-1)
 
   const getDistance = (touches: React.TouchList) => {
     const dx = touches[0].clientX - touches[1].clientX
@@ -96,59 +97,29 @@ export default function PublicCMS({
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE)
 
   // ================= LIGHTBOX =================
-  const openImage = (item: Item) => {
-    const index = imageList.findIndex((img) => img.id === item.id)
 
-    setCurrentIndex(index)
-    setScale(1)
+  // LIGHTBOX PAKAI DARI GALLERY DAN LAYANAN
 
-    setLightbox({
-      open: true,
-      src: item.image_url || "",
-      title: item.title,
-    })
-  }
+const imageSlides = useMemo(() => {
+  return imageList.map((item) => ({
+    src: item.image_url || "",
+    title: item.title,
+    description: item.description ?? "",
+  }))
+}, [imageList])
 
-  const nextImage = () => {
-    if (!imageList.length) return
-
-    const next = (currentIndex + 1) % imageList.length
-
-    setCurrentIndex(next)
-    setScale(1)
-
-    setLightbox({
-      open: true,
-      src: imageList[next].image_url || "",
-      title: imageList[next].title,
-    })
-  }
-
-  const prevImage = () => {
-    if (!imageList.length) return
-
-    const prev =
-      (currentIndex - 1 + imageList.length) % imageList.length
-
-    setCurrentIndex(prev)
-    setScale(1)
-
-    setLightbox({
-      open: true,
-      src: imageList[prev].image_url || "",
-      title: imageList[prev].title,
-    })
-  }
-
+const openImage = (item: Item) => {
+  const i = imageList.findIndex((img) => img.id === item.id)
+  setIndex(i)
+}
   return (
     <div className="min-h-screen bg-background">
 
       {/* HEADER */}
-      <section className="bg-primary py-20 text-center text-primary-foreground">
-        <h1 className="text-4xl font-bold">{title}</h1>
-        <p className="mt-4 opacity-80">{description}</p>
-      </section>
-
+      <Hero
+        title={title}
+        description={description}
+      />
       {/* CONTENT */}
       <section className="py-16">
         <div className="container mx-auto max-w-6xl px-4">
@@ -225,7 +196,7 @@ export default function PublicCMS({
                       className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground"
                     >
                       <Download className="h-4 w-4" />
-                      Download PDF
+                      Preview Dokumen
                     </a>
                   )}
                 </div>
@@ -284,119 +255,36 @@ export default function PublicCMS({
         </div>
       </section>
 
-      {lightbox.open && (
-        <div
-          className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center"
-
-          // ================= TOUCH START =================
-          onTouchStart={(e) => {
-            if (e.touches.length === 1) {
-              setTouchStartX(e.touches[0].clientX)
-            }
-
-            if (e.touches.length === 2) {
-              setLastDistance(getDistance(e.touches))
-            }
-          }}
-
-          // ================= TOUCH MOVE =================
-          onTouchMove={(e) => {
-            if (e.touches.length === 2) {
-              const newDistance = getDistance(e.touches)
-
-              if (lastDistance) {
-                const diff = newDistance - lastDistance
-
-                setScale((prev) => {
-                  let next = prev + diff * 0.005
-                  if (next < 1) next = 1
-                  if (next > 4) next = 4
-                  return next
-                })
-              }
-
-              setLastDistance(newDistance)
-            }
-          }}
-
-          // ================= TOUCH END (SWIPE) =================
-          onTouchEnd={(e) => {
-            if (touchStartX !== null && e.changedTouches.length === 1) {
-              const diff =
-                e.changedTouches[0].clientX - touchStartX
-
-              if (diff > 60) prevImage()
-              if (diff < -60) nextImage()
-            }
-
-            setTouchStartX(null)
-            setLastDistance(null)
-          }}
-
-          // ================= CLOSE BEHAVIOR =================
-          onClick={() => {
-            if (isMobile) {
-              setLightbox({ open: false, src: "", title: "" })
-            }
-          }}
-        >
-
-          {/* CLOSE BUTTON (WAJIB UNTUK SEMUA) */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              setLightbox({ open: false, src: "", title: "" })
-            }}
-            className="absolute right-4 top-4 z-50 text-white bg-black/60 p-2 rounded-full"
-          >
-            ✕
-          </button>
-
-          {/* LEFT ARROW */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              prevImage()
-            }}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-white text-3xl"
-          >
-            ‹
-          </button>
-
-          {/* RIGHT ARROW */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              nextImage()
-            }}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-white text-3xl"
-          >
-            ›
-          </button>
-
-          {/* IMAGE */}
-          <div
-            className="flex flex-col items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Image
-              src={lightbox.src}
-              alt={lightbox.title}
-              width={1200}
-              height={800}
-              className="max-h-[85vh] w-auto object-contain transition-transform duration-150"
-              style={{
-                transform: `scale(${scale})`,
-              }}
-            />
-
-            <p className="mt-3 text-sm text-white/70 text-center">
-              {lightbox.title}
-            </p>
-          </div>
-
-        </div>
-      )}
+<Lightbox
+  open={index >= 0}
+  close={() => setIndex(-1)}
+  index={index}
+  plugins={[Zoom, Captions, Thumbnails]}
+  slides={imageSlides}
+  carousel={{
+    finite: false,
+    preload: 2,
+    padding: "16px",
+    spacing: "12%",
+  }}
+  zoom={{
+    maxZoomPixelRatio: 4,
+    zoomInMultiplier: 2,
+    wheelZoomDistanceFactor: 120,
+    pinchZoomDistanceFactor: 120,
+  }}
+  captions={{
+    descriptionTextAlign: "center",
+    descriptionMaxLines: 3,
+  }}
+  thumbnails={{
+    position: "bottom",
+    width: 100,
+    height: 70,
+    borderRadius: 8,
+    gap: 10,
+  }}
+/>
 
     </div>
   )

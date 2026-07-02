@@ -4,7 +4,6 @@ export default function Page() {
   return (
     <PublicGallery
       category="layanan"
-      title="Layanan Diskominfo"
-    />
+      title="Layanan Diskominfo" description={""}    />
   )
 }

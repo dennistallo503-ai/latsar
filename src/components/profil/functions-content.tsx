@@ -45,14 +45,14 @@ export default function TaskFunctionPage() {
     <div className="min-h-screen bg-background text-foreground">
 
       {/* HEADER */}
-      <section className="relative bg-primary text-primary-foreground">
+      {/* <section className="relative bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 py-24 text-center">
           <h1 className="text-4xl font-bold">Tugas dan Fungsi</h1>
           <p className="mt-4 text-primary-foreground/90">
             Dinas Kominfo Kabupaten TTS
           </p>
         </div>
-      </section>
+      </section> */}
 
       {/* CONTENT */}
       <section className="py-16">

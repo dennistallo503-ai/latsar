@@ -2,6 +2,7 @@
 
 import React from 'react'
 import StrukutrOrganisasiPage from '@/components/profil/organization-content'
+import {Hero} from '@/components/hero/';
 import {
   LandingThemeCustomizer,
   LandingThemeCustomizerTrigger
@@ -14,6 +15,12 @@ export function StrukturOrganisasiPageContent() {
     <div className="min-h-screen bg-background">
 
       <main>
+        <>
+          <Hero 
+            title="Struktur Organisasi"
+            description="Dinas Kominfo Kabupaten TTS"
+          />
+        </>
         <StrukutrOrganisasiPage />
       </main>
 

@@ -2,6 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+
+import {Hero} from '@/components/hero/';
+
 import {
   FileText,
   Download,
@@ -54,6 +57,12 @@ export default function RegulasiPage() {
   useEffect(() => {
     fetchData()
   }, [])
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    })
+  }, [page])
 
   // ================= SORT =================
   const sorted = useMemo(() => {
@@ -88,12 +97,12 @@ export default function RegulasiPage() {
     <div className="min-h-screen bg-background">
 
       {/* HEADER */}
-      <section className="bg-primary py-20 text-center text-primary-foreground">
-        <h1 className="text-4xl font-bold">Regulasi</h1>
-        <p className="mt-4 text-primary-foreground/80">
-          Kumpulan dokumen regulasi dalam bentuk PDF
-        </p>
-      </section>
+              <>
+                <Hero 
+                  title="Regulasi"
+                  description="Kumpulan Regulasi dalam format PDF"
+                />
+              </>
 
       {/* CONTENT */}
       <section className="py-16">
@@ -155,7 +164,7 @@ export default function RegulasiPage() {
                   className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
                 >
                   <Download className="h-4 w-4" />
-                  Download
+                  Preview Dokumen
                 </a>
               </div>
             ))}
@@ -169,7 +178,6 @@ export default function RegulasiPage() {
               <button
                 onClick={() => {
                   setPage((p) => Math.max(p - 1, 1))
-                  scrollToTop()
                 }}
                 disabled={page === 1}
                 className="rounded-lg border px-3 py-2 disabled:opacity-50"
@@ -191,7 +199,6 @@ export default function RegulasiPage() {
                     key={p}
                     onClick={() => {
                       setPage(p)
-                      scrollToTop()
                     }}
                     className={`h-10 w-10 rounded-lg border ${
                       page === p
@@ -207,7 +214,6 @@ export default function RegulasiPage() {
               <button
                 onClick={() => {
                   setPage((p) => Math.min(p + 1, totalPages))
-                  scrollToTop()
                 }}
                 disabled={page === totalPages}
                 className="rounded-lg border px-3 py-2 disabled:opacity-50"

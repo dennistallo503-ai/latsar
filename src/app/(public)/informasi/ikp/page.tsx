@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <PublicCMS
       title="IKP"
-      description="Informasi dan Komunikasi Publik"
+      description="Bidang Informasi & Komunikasi Publik"
       category="ikp"
     />
   )

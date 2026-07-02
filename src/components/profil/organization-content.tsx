@@ -52,7 +52,7 @@ export default function OrganizationStructurePage() {
     <div className="min-h-screen bg-background text-foreground">
 
       {/* HEADER */}
-      <section className="relative bg-primary text-primary-foreground">
+      {/* <section className="relative bg-primary text-primary-foreground">
         <div className="absolute inset-0 bg-black/10" />
 
         <div className="container relative mx-auto px-4 py-24 text-center">
@@ -64,7 +64,7 @@ export default function OrganizationStructurePage() {
             Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan
           </p>
         </div>
-      </section>
+      </section> */}
 
       {/* CONTENT */}
       <section className="py-16 md:py-20">

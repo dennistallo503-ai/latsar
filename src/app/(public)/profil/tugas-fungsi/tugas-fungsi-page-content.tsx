@@ -2,6 +2,7 @@
 
 import React from 'react'
 import TaskFunctionPage from '@/components/profil/functions-content'
+import {Hero} from '@/components/hero/';
 import {
   LandingThemeCustomizer,
   LandingThemeCustomizerTrigger
@@ -14,6 +15,12 @@ export function TaskFunctionPageContent() {
     <div className="min-h-screen bg-background">
 
       <main>
+        <>
+          <Hero 
+            title="Tugas & Fungsi"
+            description="Dinas Kominfo Kabupaten TTS"
+          />
+        </>
         <TaskFunctionPage />
       </main>
 

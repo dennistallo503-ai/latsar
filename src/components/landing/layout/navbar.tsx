@@ -46,9 +46,9 @@ const informasiItems = [
   { name: "Sub Bagian Keuangan dan Perlengkapan", href: "/informasi/keuangan" },
 
   { title: "Bidang" },
-  { name: "Informasi dan Komunikasi Publik", href: "/informasi/ikp" },
-  { name: "Teknologi Informasi dan Komunikasi", href: "/informasi/tik" },
-  { name: "Persandian dan Statistik", href: "/informasi/persandian-statistik" },
+  { name: "IKP / Informasi dan Komunikasi Publik", href: "/informasi/ikp" },
+  { name: "TIK / Teknologi Informasi dan Komunikasi", href: "/informasi/tik" },
+  { name: "PS / Persandian & Statistik", href: "/informasi/ps" },
   
   { title: "Lainnya" },
   { name: "Regulasi & Peraturan", href: "/informasi/regulasi" },
@@ -112,7 +112,7 @@ export function Navbar() {
           </Link>
 
           {/* LOGO PEMDA (external link) */}
-          <a
+          {/* <a
             href="https://ttskab.go.id/"
             target="_blank"
             rel="noopener noreferrer"
@@ -125,7 +125,7 @@ export function Navbar() {
               height={40}
               priority
             />
-          </a>
+          </a> */}
 
           {/* Separator */}
           <div className="h-8 w-px bg-border" />
@@ -250,46 +250,33 @@ export function Navbar() {
         {/* ================= DESKTOP ACTIONS ================= */}
         <div className="hidden xl:flex items-center gap-2">
 
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
+          <div className={`overflow-hidden transition-all duration-300 ${searchOpen ? "w-80 opacity-100" : "w-0 opacity-0"}`}>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
 
-        {/* Search Box */}
-        <div
-          className={`overflow-hidden transition-all duration-300 ${
-            searchOpen ? "w-80 opacity-100" : "w-0 opacity-0"
-          }`}
-        >
-          <div className="relative">
-
-            {/* Icon Search */}
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-
-            <Input
-              placeholder="Cari informasi..."
-              className="pl-10 pr-10"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              onKeyDown={handleSearch}
-              autoFocus={searchOpen}
-            />
-
-            {/* Tombol Close */}
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
-              onClick={() => {
-                setSearchOpen(false)
-                setQuery("")
-              }}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-
+              <Input
+                placeholder="Cari informasi..."
+                className="pl-10 pr-10"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={handleSearch}
+                autoFocus={searchOpen}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
+                onClick={() => {
+                  setSearchOpen(false)
+                  setQuery("")
+                }}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
-
-          {/* Search Button */}
           <Button
             variant="ghost"
             size="icon"
@@ -297,8 +284,7 @@ export function Navbar() {
           >
             <Search className="h-5 w-5" />
           </Button>
-
-        </div>
+        </div> */}
 
           <Button
             variant="ghost"
@@ -337,12 +323,12 @@ export function Navbar() {
                   height={34}
                 />
 
-                <Image
+                {/* <Image
                   src="/logo/tts-logo.svg"
                   alt="Logo TTS"
                   width={32}
                   height={32}
-                />
+                /> */}
               </div>
 
               {/* Separator */}
@@ -365,7 +351,7 @@ export function Navbar() {
             <div className="p-4 space-y-3">
 
               {/* 🔍 MOBILE SEARCH */}
-              <div className="relative">
+              {/* <div className="relative">
 
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 
@@ -389,7 +375,7 @@ export function Navbar() {
                   </Button>
                 )}
 
-              </div>
+              </div> */}
 
               {/* BERANDA */}
               <Link href="/" onClick={() => setIsOpen(false)} className="block py-2">

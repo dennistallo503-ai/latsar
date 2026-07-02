@@ -14,6 +14,7 @@ import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/captions.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
+import {Hero} from '@/components/hero/';
 
 interface Item {
   id: string;
@@ -28,9 +29,11 @@ const perPage = 6;
 export default function PublicGallery({
   category,
   title,
+  description,
 }: {
   category: "galeri" | "layanan";
   title: string;
+  description: string;
 }) {
 
   const [items, setItems] = useState<Item[]>([]);
@@ -76,7 +79,6 @@ export default function PublicGallery({
 
   // ================= PAGINATION =================
   const totalPage = Math.ceil(sorted.length / perPage);
-
   const paginated = sorted.slice(
     (page - 1) * perPage,
     page * perPage
@@ -109,9 +111,10 @@ export default function PublicGallery({
     <div className="min-h-screen bg-background text-foreground">
 
       {/* HEADER */}
-      <section className="bg-primary py-20 text-center text-primary-foreground">
-        <h1 className="text-4xl font-bold">{title}</h1>
-      </section>
+      <Hero
+  title={title}
+  description={description}
+/>
 
       {/* SORT */}
       <section className="py-6 border-b">

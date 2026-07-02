@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <PublicCMS
       title="TIK"
-      description="Teknologi Informasi dan Komunikasi"
+      description="Bidang Teknologi Informasi & Komunikasi"
       category="tik"
     />
   )

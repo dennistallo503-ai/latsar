@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <PublicCMS
       title="Keuangan"
-      description="Bidang Keuangan Dinas Kominfo"
+      description="Sub Bagian Keuangan & Perlengkapan"
       category="keuangan"
     />
   )
