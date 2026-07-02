@@ -303,11 +303,33 @@ export function Navbar() {
 
         {/* ================= MOBILE MENU ================= */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="xl:hidden">
+          <div className="xl:hidden flex items-center gap-1">
+            {/* DARK MODE TOGGLE (PINDAH KE SINI) */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                setTheme(theme === "light" ? "dark" : "light")
+              }
+            >
+              <Sun className="h-5 w-5 dark:rotate-90 dark:scale-0 transition-all" />
+              <Moon className="absolute h-5 w-5 rotate-90 scale-0 dark:rotate-0 dark:scale-100 transition-all" />
+            </Button>
+
+            {/* HAMBURGER MENU */}
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu />
+              </Button>
+            </SheetTrigger>
+
+          </div>
+          
+          {/* <SheetTrigger asChild className="xl:hidden">
             <Button variant="ghost" size="icon">
               <Menu />
             </Button>
-          </SheetTrigger>
+          </SheetTrigger> */}
 
           <SheetContent side="right" className="w-full sm:w-[380px] p-0">
 
@@ -465,7 +487,7 @@ export function Navbar() {
               </Link>
 
               {/* 🌙 MOBILE ACTIONS */}
-              <div className="pt-4 flex items-center justify-between border-t">
+              {/* <div className="pt-4 flex items-center justify-between border-t">
 
                 <Button
                   variant="ghost"
@@ -480,7 +502,7 @@ export function Navbar() {
                   <Link href="/sign-in">Login</Link>
                 </Button>
 
-              </div>
+              </div> */}
 
             </div>
           </SheetContent>
