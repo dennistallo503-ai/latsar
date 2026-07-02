@@ -16,13 +16,21 @@ export default function Hero({
   return (
     <section
       className="
-        relative
-        isolate
-        h-[35vh]
-        min-h-[230px]
-        max-h-[360px]
-        overflow-hidden
-        bg-[#020817]
+      relative
+      isolate
+
+      h-[40vh]
+      min-h-[300px]
+
+      sm:h-[38vh]
+      sm:min-h-[320px]
+
+      lg:h-[35vh]
+      lg:min-h-[230px]
+      lg:max-h-[360px]
+
+      overflow-hidden
+      bg-[#020817]
       "
     >
       {/* ========================================= */}
@@ -269,8 +277,8 @@ export default function Hero({
       {/* CONTENT */}
       {/* ========================================= */}
 
-      <div className="relative z-20 flex h-full items-center">
-        <div className="mx-auto w-full max-w-7xl px-6 lg:px-8">
+      <div className="relative z-20 flex h-full items-end">
+        <div className="mx-auto w-full max-w-7xl px-6 pb-6 lg:px-8 lg:pb-10">
           <motion.div
             initial={{
               opacity: 0,
@@ -288,7 +296,7 @@ export default function Hero({
             w-fit
             max-w-md
             sm:max-w-xl
-            lg:max-w-2xl
+            lg:max-w-[680px]
             rounded-3xl
             border
             border-white/10

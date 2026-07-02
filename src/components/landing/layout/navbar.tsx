@@ -36,18 +36,18 @@ import { useTheme } from "@/hooks/use-theme"
 
 const profilItems = [
   { name: "Visi & Misi Pemda TTS", href: "/profil/visi-misi" },
-  { name: "Tugas dan Fungsi", href: "/profil/tugas-fungsi" },
+  { name: "Tugas & Fungsi", href: "/profil/tugas-fungsi" },
   { name: "Struktur Organisasi", href: "/profil/struktur-organisasi" },
 ]
 
 const informasiItems = [
   { title: "Sekretariat" },
-  { name: "Sub Bagian Tata Usaha, Program dan Pelaporan", href: "/informasi/tata-usaha" },
-  { name: "Sub Bagian Keuangan dan Perlengkapan", href: "/informasi/keuangan" },
+  { name: "Sub Bagian Tata Usaha, Program & Pelaporan", href: "/informasi/tata-usaha" },
+  { name: "Sub Bagian Keuangan & Perlengkapan", href: "/informasi/keuangan" },
 
   { title: "Bidang" },
-  { name: "IKP / Informasi dan Komunikasi Publik", href: "/informasi/ikp" },
-  { name: "TIK / Teknologi Informasi dan Komunikasi", href: "/informasi/tik" },
+  { name: "IKP / Informasi & Komunikasi Publik", href: "/informasi/ikp" },
+  { name: "TIK / Teknologi Informasi & Komunikasi", href: "/informasi/tik" },
   { name: "PS / Persandian & Statistik", href: "/informasi/ps" },
   
   { title: "Lainnya" },

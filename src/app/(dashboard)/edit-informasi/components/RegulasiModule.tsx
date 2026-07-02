@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabaseClient"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 
 import { Upload, Trash2, Pencil, X } from "lucide-react"
 
@@ -13,6 +14,7 @@ type Item = {
   id: string
   kategori: string
   title: string
+  description: string | null
   pdf_url: string
   created_at: string
 }
@@ -43,6 +45,7 @@ export default function RegulasiModule({
 
   const [docTitle, setDocTitle] = useState("")
   const [docLink, setDocLink] = useState("")
+  const [docDescription, setDocDescription] = useState("")
 
   const [editId, setEditId] = useState<string | null>(null)
 
@@ -78,20 +81,26 @@ export default function RegulasiModule({
   // ================= RESET =================
   const resetForm = () => {
     setDocTitle("")
+    setDocDescription("")
     setDocLink("")
     setEditId(null)
   }
 
   // ================= SAVE =================
   const handleSave = async () => {
-    if (!docTitle.trim() || !docLink.trim()) {
-      return alert("Lengkapi data regulasi")
+    if (
+      !docTitle.trim() ||
+      !docDescription.trim() ||
+      !docLink.trim()
+    ) {
+      return alert("Lengkapi seluruh data regulasi terlebih dahulu.")
     }
 
     const payload = {
       kategori: safeCategory,
       type: "pdf",
       title: docTitle,
+      description: docDescription,
       pdf_url: docLink,
     }
 
@@ -106,7 +115,11 @@ export default function RegulasiModule({
       return
     }
 
-    alert(editId ? "Regulasi berhasil diperbarui ✏️" : "Regulasi berhasil ditambahkan ✅")
+    alert(
+      editId
+        ? "Regulasi berhasil diperbarui ✅"
+        : "Regulasi berhasil ditambahkan ✅"
+    )
 
     resetForm()
     fetchData(page)
@@ -127,7 +140,7 @@ export default function RegulasiModule({
       return
     }
 
-    alert("Data berhasil dihapus 🗑️")
+    alert("Regulasi berhasil dihapus 🗑️")
 
     fetchData(page)
   }
@@ -137,8 +150,9 @@ export default function RegulasiModule({
     setEditId(item.id)
     setDocTitle(item.title || "")
     setDocLink(item.pdf_url || "")
+    setDocDescription(item.description || "")
 
-    alert("Mode edit aktif ✏️")
+    alert("Mode edit diaktifkan. Silakan ubah data kemudian klik Update.")
   }
 
   // ================= PAGINATION =================
@@ -178,6 +192,13 @@ export default function RegulasiModule({
             placeholder="Judul Regulasi"
           />
 
+          <Textarea
+            value={docDescription}
+            onChange={(e) => setDocDescription(e.target.value)}
+            placeholder="Deskripsi Regulasi"
+            rows={4}
+          />
+
           <Input
             value={docLink}
             onChange={(e) => setDocLink(e.target.value)}
@@ -194,7 +215,7 @@ export default function RegulasiModule({
               variant="secondary"
               onClick={() => {
                 resetForm()
-                alert("Edit dibatalkan ❌")
+                alert("Perubahan dibatalkan.")
               }}
               className="w-full"
             >
@@ -212,17 +233,23 @@ export default function RegulasiModule({
 
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b text-left">
+            <tr className="border-b text-left">
                 <th className="p-2">Judul</th>
+                <th className="p-2">Deskripsi</th>
                 <th className="p-2">Link</th>
                 <th className="p-2">Aksi</th>
-              </tr>
+            </tr>
             </thead>
 
             <tbody>
               {items.map((item) => (
                 <tr key={item.id} className="border-b">
                   <td className="p-2">{item.title}</td>
+                  <td className="p-2 max-w-sm">
+                    <p className="line-clamp-3 text-muted-foreground">
+                      {item.description || "-"}
+                    </p>
+                  </td>
 
                   <td className="p-2">
                     <a
