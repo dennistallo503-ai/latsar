@@ -50,13 +50,20 @@ export default function TaskFunctionAdmin() {
       ...p,
       fungsi: [...p.fungsi, ""],
     }))
+
+    alert("Fungsi baru ditambahkan ➕")
   }
 
   const removeFungsi = (i: number) => {
+    const ok = confirm("Hapus fungsi ini?")
+    if (!ok) return
+
     setForm((p: any) => ({
       ...p,
       fungsi: p.fungsi.filter((_: any, idx: number) => idx !== i),
     }))
+
+    alert("Fungsi dihapus dari form 🗑️")
   }
 
   // SAVE
@@ -78,8 +85,7 @@ export default function TaskFunctionAdmin() {
     setLoading(false)
 
     if (error) {
-      console.error(error)
-      alert(error.message)
+      alert("Gagal menyimpan: " + error.message)
       return
     }
 
@@ -87,7 +93,7 @@ export default function TaskFunctionAdmin() {
       setForm((p: any) => ({ ...p, id: data.id }))
     }
 
-    alert("Berhasil disimpan")
+    alert(form.id ? "Data berhasil diperbarui ✏️" : "Data berhasil disimpan ✅")
   }
 
   return (

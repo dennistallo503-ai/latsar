@@ -92,71 +92,87 @@ export default function MediaCMS({ category, title, description }: Props) {
   const handleUpload = async () => {
     if (!imageTitle) return alert("Judul wajib diisi");
 
-    try {
-      let url = "";
-      let path = oldPath;
+try {
+  let url = "";
+  let path = oldPath;
 
-      // upload image jika ada
-      if (imageFile) {
-        const res = await uploadImage(imageFile);
-        url = res.url;
-        path = res.path;
-      }
+  if (imageFile) {
+    const res = await uploadImage(imageFile);
+    url = res.url;
+    path = res.path;
+  }
 
-      // EDIT
-      if (editId) {
-        await supabase
-          .from("media_content")
-          .update({
-            title: imageTitle,
-            description: imageDesc,
-            ...(url && { image_url: url }),
-            ...(path && { storage_path: path }),
-          })
-          .eq("id", editId);
+  // ================= EDIT =================
+  if (editId) {
+    await supabase
+      .from("media_content")
+      .update({
+        title: imageTitle,
+        description: imageDesc,
+        ...(url && { image_url: url }),
+        ...(path && { storage_path: path }),
+      })
+      .eq("id", editId);
 
-        // delete old image
-        if (imageFile && oldPath) {
-          await supabase.storage
-            .from("media")
-            .remove([oldPath]);
-        }
-      } else {
-        // CREATE
-        if (!imageFile) return alert("Gambar wajib diisi");
-
-        await supabase.from("media_content").insert({
-          category,
-          title: imageTitle,
-          description: imageDesc,
-          image_url: url,
-          storage_path: path,
-        });
-      }
-
-      resetForm();
-      fetchData();
-      setPage(1);
-      scrollToTop();
-    } catch (err: any) {
-      alert(err.message);
+    if (imageFile && oldPath) {
+      await supabase.storage
+        .from("media")
+        .remove([oldPath]);
     }
+
+    alert("Data berhasil diperbarui ✏️");
+  }
+
+  // ================= CREATE =================
+  else {
+    if (!imageFile) return alert("Gambar wajib diisi");
+
+    await supabase.from("media_content").insert({
+      category,
+      title: imageTitle,
+      description: imageDesc,
+      image_url: url,
+      storage_path: path,
+    });
+
+    alert("Data berhasil disimpan ✅");
+  }
+
+  resetForm();
+  fetchData();
+  setPage(1);
+  scrollToTop();
+
+} catch (err: any) {
+  alert(err.message);
+}
   };
 
   // ================= DELETE =================
   const handleDelete = async (item: Item) => {
-    if (item.storage_path) {
-      await supabase.storage
-        .from("media")
-        .remove([item.storage_path]);
+    try {
+      if (item.storage_path) {
+        await supabase.storage
+          .from("media")
+          .remove([item.storage_path]);
+      }
+
+      const { error } = await supabase
+        .from("media_content")
+        .delete()
+        .eq("id", item.id);
+
+      if (error) {
+        alert("Gagal menghapus: " + error.message);
+        return;
+      }
+
+      alert("Data berhasil dihapus 🗑️");
+
+      fetchData();
+    } catch (err: any) {
+      alert(err.message);
     }
-
-    await supabase
-      .from("media_content")
-      .delete()
-      .eq("id", item.id);
-
-    fetchData();
   };
 
   // ================= EDIT =================
@@ -168,6 +184,7 @@ export default function MediaCMS({ category, title, description }: Props) {
 
     setPage(1);
     scrollToTop();
+    alert("Mode edit aktif ✏️");
   };
 
   // ================= RESET =================
@@ -285,7 +302,11 @@ export default function MediaCMS({ category, title, description }: Props) {
                       <Button
                         size="icon"
                         variant="destructive"
-                        onClick={() => handleDelete(item)}
+                        onClick={() => {
+                          const ok = confirm("⚠️ Hapus data ini?")
+                          if (!ok) return
+                          handleDelete(item)
+                        }}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

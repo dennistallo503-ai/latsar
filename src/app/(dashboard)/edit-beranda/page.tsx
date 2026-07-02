@@ -83,24 +83,27 @@ export default function HeroAdminPage() {
       })
     }
 
-    const { error } = await query
+    const { error } = await query;
 
-    setLoading(false)
+    setLoading(false);
 
     if (error) {
-      alert(error.message)
-      return
+      alert(error.message);
+      return;
     }
 
+    // RESET FORM
     setForm({
       id: "",
       heading: "",
       paragraph: "",
       image: "",
       sort_order: 0,
-    })
+    });
 
-    fetchHeroes()
+    fetchHeroes();
+
+    alert(form.id ? "Hero berhasil diperbarui ✏️" : "Hero berhasil dibuat ✅");
   }
 
   // EDIT
@@ -111,14 +114,30 @@ export default function HeroAdminPage() {
       paragraph: h.paragraph,
       image: h.image_url,
       sort_order: h.sort_order,
-    })
-  }
+    });
+
+    alert("Mode edit aktif ✏️");
+  };
 
   // DELETE
   const deleteHero = async (id: string) => {
-    await supabase.from("hero_sections").delete().eq("id", id)
-    fetchHeroes()
-  }
+    const confirmDelete = confirm("Yakin ingin menghapus hero ini?");
+    if (!confirmDelete) return;
+
+    const { error } = await supabase
+      .from("hero_sections")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    alert("Hero berhasil dihapus 🗑️");
+
+    fetchHeroes();
+  };
 
   return (
     <div className="space-y-6">

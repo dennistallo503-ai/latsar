@@ -81,7 +81,11 @@ export default function UploadTableModule({
     setDocLink("")
     setImageFile(null)
     setImageDesc("")
+    setImgTitle("")
+    setDocDesc("")
     setEditId(null)
+
+    alert("Form telah direset 🔄")
   }
 
   // ================= IMAGE UPLOAD =================
@@ -121,17 +125,21 @@ export default function UploadTableModule({
       })
 
       if (error) return alert(error.message)
+
+      alert("PDF berhasil ditambahkan ✅")
     } else {
       const { error } = await supabase
         .from("informasi_bidang")
         .update({
           title: docTitle,
-          description: docDesc, // ✅ FIX
+          description: docDesc,
           pdf_url: docLink,
         })
         .eq("id", editId)
 
       if (error) return alert(error.message)
+
+      alert("PDF berhasil diperbarui ✏️")
     }
 
     resetForm()
@@ -156,6 +164,8 @@ export default function UploadTableModule({
         })
 
         if (error) return alert(error.message)
+
+        alert("Gambar berhasil ditambahkan ✅")
       } else {
         const { error } = await supabase
           .from("informasi_bidang")
@@ -167,6 +177,8 @@ export default function UploadTableModule({
           .eq("id", editId)
 
         if (error) return alert(error.message)
+
+        alert("Gambar berhasil diperbarui ✏️")
       }
 
       resetForm()
@@ -178,6 +190,12 @@ export default function UploadTableModule({
 
   // ================= DELETE =================
   const handleDelete = async (item: Item) => {
+    const confirmDelete = confirm(
+      `Yakin ingin menghapus "${item.title}"?`
+    )
+
+    if (!confirmDelete) return
+
     if (item.type === "image" && item.image_url) {
       const path = item.image_url.split(
         "/storage/v1/object/public/images/"
@@ -188,8 +206,17 @@ export default function UploadTableModule({
       }
     }
 
-    await supabase.from("informasi_bidang").delete().eq("id", item.id)
+    const { error } = await supabase
+      .from("informasi_bidang")
+      .delete()
+      .eq("id", item.id)
 
+    if (error) {
+      alert(error.message)
+      return
+    }
+
+    alert("Data berhasil dihapus 🗑️")
     fetchData(page)
   }
 
@@ -357,7 +384,10 @@ export default function UploadTableModule({
                           setImgTitle(item.title)
                           setImageDesc(item.description || "")
                         }
+
                         setEditId(item.id)
+
+                        alert("Mode edit aktif ✏️")
                       }}
                     >
                       <Pencil className="h-4 w-4" />
@@ -366,7 +396,10 @@ export default function UploadTableModule({
                     <Button
                       size="icon"
                       variant="destructive"
-                      onClick={() => handleDelete(item)}
+                      onClick={() => {
+                        const ok = confirm("Hapus item ini?")
+                        if (ok) handleDelete(item)
+                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

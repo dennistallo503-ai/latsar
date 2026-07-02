@@ -100,7 +100,7 @@ export default function VisionMissionAdminPage() {
         ...prev,
         [field]: newUrl,
       }))
-
+      alert(`${field === "bupati_image" ? "Foto Bupati" : "Foto Wakil"} dihapus 🗑️`)
       // delete old image
       if (oldUrl) {
         const oldPath = oldUrl.split(
@@ -159,6 +159,8 @@ export default function VisionMissionAdminPage() {
       ...prev,
       misi: [...prev.misi, ""],
     }))
+    alert("Misi baru ditambahkan ➕")
+
   }
 
   const removeMission = (i: number) => {
@@ -166,6 +168,7 @@ export default function VisionMissionAdminPage() {
       ...prev,
       misi: prev.misi.filter((_, index) => index !== i),
     }))
+    alert("Misi dihapus 🗑️")
   }
 
   // ========================
@@ -173,6 +176,8 @@ export default function VisionMissionAdminPage() {
   // ========================
   const handleSave = async () => {
     setLoading(true)
+
+    const isEdit = !!form.id
 
     const payload = {
       id: form.id,
@@ -204,7 +209,12 @@ export default function VisionMissionAdminPage() {
       setForm((prev) => ({ ...prev, id: data.id }))
     }
 
-    alert("Berhasil disimpan")
+    // ✅ ALERT SUCCESS
+    alert(
+      isEdit
+        ? "Data berhasil diperbarui ✏️"
+        : "Data berhasil disimpan ✅"
+    )
   }
 
   // ========================

@@ -106,12 +106,17 @@ export default function RegulasiModule({
       return
     }
 
+    alert(editId ? "Regulasi berhasil diperbarui ✏️" : "Regulasi berhasil ditambahkan ✅")
+
     resetForm()
     fetchData(page)
   }
 
   // ================= DELETE =================
   const handleDelete = async (id: string) => {
+    const confirmDelete = confirm("Yakin ingin menghapus data ini?")
+    if (!confirmDelete) return
+
     const { error } = await supabase
       .from("informasi_bidang")
       .delete()
@@ -122,6 +127,8 @@ export default function RegulasiModule({
       return
     }
 
+    alert("Data berhasil dihapus 🗑️")
+
     fetchData(page)
   }
 
@@ -130,6 +137,8 @@ export default function RegulasiModule({
     setEditId(item.id)
     setDocTitle(item.title || "")
     setDocLink(item.pdf_url || "")
+
+    alert("Mode edit aktif ✏️")
   }
 
   // ================= PAGINATION =================
@@ -183,7 +192,10 @@ export default function RegulasiModule({
           {editId && (
             <Button
               variant="secondary"
-              onClick={resetForm}
+              onClick={() => {
+                resetForm()
+                alert("Edit dibatalkan ❌")
+              }}
               className="w-full"
             >
               <X className="w-4 h-4 mr-2" />
