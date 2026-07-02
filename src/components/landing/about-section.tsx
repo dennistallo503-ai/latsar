@@ -87,7 +87,7 @@ export function AboutSection() {
             <div className="flex h-full flex-col rounded-3xl transition-all duration-300">
               <div className="space-y-5">
                 {/* Tugas Dinas */}
-                <div className="bg-background border hover:border-primary shadow-lg border-border/20 p-3 rounded-lg">
+                <div className="bg-background border hover:border-primary shadow-lg border-border/20 p-3 rounded-lg -translate-y-1">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="flex h-20 w-12 items-center justify-center rounded-xl bg-primary/10">
                       <Handshake className="h-6 w-6 text-primary" />
@@ -111,7 +111,7 @@ export function AboutSection() {
                 <div className="border-t border-border/50"></div>
 
                 {/* Fungsi Dinas */}
-                <div className="bg-background border hover:border-primary shadow-lg border-border/20 p-3 rounded-lg">
+                <div className="bg-background border hover:border-primary shadow-lg border-border/20 p-3 rounded-lg -translate-y-1">
                   <div className="mb-4 flex items-center gap-3">
                     <div className="flex h-20 w-12 items-center justify-center rounded-xl bg-primary/10">
                       <UserCheck className="h-6 w-6 text-primary" />
