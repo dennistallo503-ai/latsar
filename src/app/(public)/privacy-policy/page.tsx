@@ -1,8 +1,8 @@
-export default function DisclaimerPage() {
+export default function PrivacyPolicyPage() {
   return (
     <div className="container mx-auto max-w-4xl px-6 py-16">
       <h1 className="text-4xl font-bold tracking-tight">
-        Disclaimer
+        Kebijakan Privasi
       </h1>
 
       <p className="mt-4 text-muted-foreground">
@@ -11,68 +11,87 @@ export default function DisclaimerPage() {
 
       <div className="prose prose-slate dark:prose-invert mt-10 max-w-none">
         <p>
-          Seluruh informasi yang tersedia pada website ini disediakan
-          sebagai media informasi publik dan pelayanan kepada masyarakat.
+          Dinas Komunikasi dan Informatika berkomitmen untuk melindungi
+          privasi setiap pengguna yang mengakses website ini. Kebijakan
+          Privasi ini menjelaskan bagaimana informasi dikumpulkan,
+          digunakan, disimpan, dan dilindungi.
         </p>
 
-        <h2>1. Akurasi Informasi</h2>
+        <h2>1. Informasi yang Dikumpulkan</h2>
 
         <p>
-          Kami berupaya menyajikan informasi yang akurat, lengkap, dan
-          terbaru. Namun demikian, tidak terdapat jaminan bahwa seluruh
-          informasi akan selalu bebas dari kesalahan maupun keterlambatan
-          pembaruan.
+          Website dapat mengumpulkan informasi yang diberikan secara
+          sukarela oleh pengguna, seperti:
+        </p>
+
+        <ul>
+          <li>Nama</li>
+          <li>Alamat email</li>
+          <li>Nomor telepon</li>
+          <li>Isi pesan atau pengaduan</li>
+        </ul>
+
+        <p>
+          Selain itu, sistem dapat secara otomatis mencatat informasi
+          teknis seperti alamat IP, jenis perangkat, browser, dan waktu
+          akses untuk keperluan keamanan serta peningkatan layanan.
         </p>
 
         <h2>2. Penggunaan Informasi</h2>
 
+        <p>Informasi yang diperoleh digunakan untuk:</p>
+
+        <ul>
+          <li>Memberikan layanan informasi kepada masyarakat.</li>
+          <li>Menindaklanjuti pertanyaan atau pengaduan.</li>
+          <li>Meningkatkan kualitas layanan digital.</li>
+          <li>Menjaga keamanan sistem.</li>
+        </ul>
+
+        <h2>3. Perlindungan Data</h2>
+
         <p>
-          Pengguna bertanggung jawab atas penggunaan informasi yang
-          diperoleh dari website ini. Segala risiko yang timbul akibat
-          penggunaan informasi menjadi tanggung jawab pengguna.
+          Kami menerapkan langkah-langkah teknis dan administratif yang
+          wajar untuk menjaga keamanan informasi dari akses yang tidak
+          sah, penyalahgunaan, maupun perubahan data.
         </p>
 
-        <h2>3. Tautan Eksternal</h2>
+        <h2>4. Pengungkapan Informasi</h2>
 
         <p>
-          Website ini dapat menyediakan tautan menuju website instansi
-          pemerintah maupun pihak ketiga. Kami tidak bertanggung jawab
-          atas isi, layanan, maupun kebijakan pada website tersebut.
+          Informasi pribadi tidak akan diperjualbelikan maupun diberikan
+          kepada pihak lain, kecuali diwajibkan oleh peraturan
+          perundang-undangan.
         </p>
 
-        <h2>4. Hak Kekayaan Intelektual</h2>
+        <h2>5. Cookie</h2>
 
         <p>
-          Seluruh konten berupa teks, gambar, dokumen, logo, dan
-          informasi lainnya merupakan milik Dinas Komunikasi dan
-          Informatika atau pihak terkait sesuai ketentuan yang berlaku,
-          kecuali dinyatakan lain.
+          Website dapat menggunakan cookie untuk meningkatkan pengalaman
+          pengguna, analisis statistik, dan optimalisasi layanan.
         </p>
 
-        <h2>5. Perubahan Layanan</h2>
+        <h2>6. Tautan ke Situs Lain</h2>
 
         <p>
-          Kami berhak melakukan perubahan terhadap konten, fitur, maupun
-          layanan website tanpa pemberitahuan terlebih dahulu apabila
-          diperlukan.
+          Website ini dapat memuat tautan menuju website pemerintah atau
+          pihak ketiga. Kami tidak bertanggung jawab atas kebijakan
+          privasi maupun isi dari website tersebut.
         </p>
 
-        <h2>6. Pembatasan Tanggung Jawab</h2>
+        <h2>7. Perubahan Kebijakan</h2>
 
         <p>
-          Dinas Komunikasi dan Informatika tidak bertanggung jawab atas
-          kerugian langsung maupun tidak langsung yang timbul akibat
-          penggunaan website ini, termasuk gangguan layanan, kehilangan
-          data, maupun kerusakan perangkat yang disebabkan oleh faktor di
-          luar kendali kami.
+          Kebijakan Privasi dapat diperbarui sewaktu-waktu sesuai
+          kebutuhan. Perubahan akan dipublikasikan pada halaman ini.
         </p>
 
-        <h2>7. Persetujuan</h2>
+        <h2>8. Kontak</h2>
 
         <p>
-          Dengan mengakses dan menggunakan website ini, pengguna dianggap
-          telah memahami dan menyetujui seluruh ketentuan yang tercantum
-          dalam halaman Disclaimer ini.
+          Apabila terdapat pertanyaan mengenai Kebijakan Privasi ini,
+          silakan menghubungi Dinas Komunikasi dan Informatika melalui
+          kanal resmi yang tersedia pada website.
         </p>
       </div>
     </div>
