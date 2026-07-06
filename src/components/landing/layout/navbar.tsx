@@ -389,7 +389,7 @@ export function Navbar() {
           <SheetContent side="right" className="w-full sm:w-[380px] p-0">
 
           <SheetHeader className="border-b px-5 py-4">
-            <div className="border-b px-5 py-3">
+            {/* <div className="border-b px-5 py-3">
               <div className="flex items-center justify-center gap-6">
 
                 <Link
@@ -420,7 +420,7 @@ export function Navbar() {
                 </Link>
 
               </div>
-            </div>
+            </div> */}
             <div className="flex items-center gap-3">
 
               {/* Logo */}
