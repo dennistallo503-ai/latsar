@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+import { BriefcaseBusiness, CheckCircle2 } from "lucide-react"
 
 export default function TaskFunctionPage() {
   const [data, setData] = useState<any>(null)
@@ -44,40 +45,64 @@ export default function TaskFunctionPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
 
-      {/* HEADER */}
-      {/* <section className="relative bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 py-24 text-center">
-          <h1 className="text-4xl font-bold">Tugas dan Fungsi</h1>
-          <p className="mt-4 text-primary-foreground/90">
-            Dinas Kominfo Kabupaten TTS
-          </p>
-        </div>
-      </section> */}
-
       {/* CONTENT */}
       <section className="py-16">
-        <div className="container mx-auto max-w-5xl px-4 grid md:grid-cols-2 gap-8">
+        <div className="container mx-auto max-w-6xl px-4 grid lg:grid-cols-5 gap-8">
 
           {/* TUGAS */}
-          <div className="rounded-3xl border bg-card p-8">
-            <h2 className="text-2xl font-bold mb-4 text-primary">Tugas</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              {data.tugas}
-            </p>
+          <div className="lg:col-span-2">
+            <div className="h-full rounded-3xl border bg-card p-8 shadow-md">
+
+              <div className="flex items-center gap-3 mb-5">
+                <BriefcaseBusiness className="h-8 w-8 text-primary" />
+                <h2 className="text-3xl font-bold">
+                  Tugas
+                </h2>
+              </div>
+
+              <p className="text-muted-foreground leading-relaxed">
+                {data.tugas || "-"}
+              </p>
+
+            </div>
           </div>
 
           {/* FUNGSI */}
-          <div className="rounded-3xl border bg-card p-8">
-            <h2 className="text-2xl font-bold mb-4 text-primary">Fungsi</h2>
+          <div className="lg:col-span-3">
+            <div className="rounded-3xl border bg-card p-8 shadow-md">
 
-            <ol className="space-y-3">
-              {data.fungsi.map((item: string, i: number) => (
-                <li key={i} className="flex gap-3">
-                  <span className="font-bold">{i + 1}.</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ol>
+              <h2 className="text-3xl font-bold mb-8">
+                Fungsi
+              </h2>
+
+              <div className="space-y-4">
+                {data.fungsi.length ? (
+                  data.fungsi.map((item: string, index: number) => (
+                    <div
+                      key={index}
+                      className="flex gap-4 rounded-2xl border p-5 transition hover:border-primary"
+                    >
+                      <CheckCircle2 className="mt-1 h-6 w-6 shrink-0 text-primary" />
+
+                      <div>
+                        <p className="font-semibold">
+                          Fungsi {index + 1}
+                        </p>
+
+                        <p className="text-muted-foreground">
+                          {item}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground">
+                    Belum ada data fungsi.
+                  </p>
+                )}
+              </div>
+
+            </div>
           </div>
 
         </div>

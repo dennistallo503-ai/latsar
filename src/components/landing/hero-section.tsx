@@ -121,13 +121,13 @@ export function HeroSection({ page = "home" }) {
                       Website Resmi Diskominfo TTS
                     </span>
 
-                    <h1 className="mt-5 text-4xl font-bold leading-tight md:text-6xl">
-                      {slide.heading}
-                    </h1>
+                      <h5 className="mt-5 text-xl font-bold leading-tight md:text-5xl">
+                        {slide.heading}
+                      </h5>
 
-                    <p className="mt-6 max-w-2xl text-base leading-8 text-gray-200 md:text-xl">
-                      {slide.paragraph}
-                    </p>
+                      <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-200 md:mt-6 md:text-lg md:leading-8">
+                        {slide.paragraph}
+                      </p>
 
                   </div>
 

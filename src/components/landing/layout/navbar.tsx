@@ -1,8 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Menu, Moon, Sun, Search, ChevronDown, X } from "lucide-react"
+import {
+  Menu,
+  Moon,
+  Sun,
+  Search,
+  ChevronDown,
+  X,
+  Facebook,
+  Youtube,
+  Instagram,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from "next/image"
@@ -59,7 +69,11 @@ const lainnyaItems = [
   { name: "Galeri", href: "/menu-lainnya/galeri" },
 ]
 
-
+const socialLinks = {
+  facebook: "https://www.facebook.com/share/1CtruBivmg/",
+  youtube: "https://youtube.com/@diskominfokabtts8341?si=N1_ruEEKsJma88dZ",
+  instagram: "https://www.instagram.com/diskominfo_tts?igsh=cGxqbzljNDBkcGpi",
+}
 
 /* ================= COMPONENT ================= */
 
@@ -70,6 +84,31 @@ export function Navbar() {
   const [infoOpen, setInfoOpen] = useState(false)
   const [lainnyaOpen, setLainnyaOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [showSocial, setShowSocial] = useState(true)
+
+  useEffect(() => {
+    let lastScrollY = window.scrollY
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+
+      if (currentScrollY < 20) {
+        setShowSocial(true)
+      } else if (currentScrollY > lastScrollY) {
+        // Scroll ke bawah
+        setShowSocial(false)
+      } else {
+        // Scroll ke atas
+        setShowSocial(true)
+      }
+
+      lastScrollY = currentScrollY
+    }
+
+    window.addEventListener("scroll", handleScroll)
+
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   const router = useRouter()
   const [query, setQuery] = useState("")
@@ -111,34 +150,49 @@ export function Navbar() {
             />
           </Link>
 
-          {/* LOGO PEMDA (external link) */}
-          {/* <a
-            href="https://ttskab.go.id/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2"
-          >
-            <Image
-              src="/logo/tts-logo.svg"
-              alt="Logo Kabupaten TTS"
-              width={40}
-              height={40}
-              priority
-            />
-          </a> */}
-
           {/* Separator */}
           <div className="h-8 w-px bg-border" />
 
           {/* IDENTITAS (tidak clickable atau bisa ikut homepage jika mau) */}
-          <div className="leading-tight">
-            <p className="text-xs sm:text-sm font-semibold">
-              Dinas Komunikasi dan Informatika
-            </p>
+          <div className="flex items-center gap-4">
 
-            <p className="text-[10px] sm:text-xs text-muted-foreground">
-              Pemerintah Kab. Timor Tengah Selatan
-            </p>
+            <div className="leading-tight">
+              <p className="text-xs sm:text-sm font-semibold">
+                Dinas Komunikasi dan Informatika
+              </p>
+
+              <p className="text-[10px] sm:text-xs text-muted-foreground">
+                Pemerintah Kab. Timor Tengah Selatan
+              </p>
+            </div>
+
+            {/* SOCIAL MEDIA */}
+            <div className="hidden md:flex items-center gap-2">
+              <Link
+                href={socialLinks.facebook}
+                target="_blank"
+                className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-blue-600"
+              >
+                <Facebook className="h-5 w-5" />
+              </Link>
+
+              <Link
+                href={socialLinks.youtube}
+                target="_blank"
+                className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-red-600"
+              >
+                <Youtube className="h-5 w-5" />
+              </Link>
+
+              <Link
+                href={socialLinks.instagram}
+                target="_blank"
+                className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-pink-600"
+              >
+                <Instagram className="h-5 w-5" />
+              </Link>
+            </div>
+
           </div>
 
         </div>
@@ -246,6 +300,7 @@ export function Navbar() {
 
           </NavigationMenuList>
         </NavigationMenu>
+        
 
         {/* ================= DESKTOP ACTIONS ================= */}
         <div className="hidden xl:flex items-center gap-2">
@@ -334,6 +389,38 @@ export function Navbar() {
           <SheetContent side="right" className="w-full sm:w-[380px] p-0">
 
           <SheetHeader className="border-b px-5 py-4">
+            <div className="border-b px-5 py-3">
+              <div className="flex items-center justify-center gap-6">
+
+                <Link
+                  href={socialLinks.facebook}
+                  target="_blank"
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-blue-600 transition-colors"
+                >
+                  <Facebook className="h-4 w-4" />
+                  <span>Facebook</span>
+                </Link>
+
+                <Link
+                  href={socialLinks.youtube}
+                  target="_blank"
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-red-600 transition-colors"
+                >
+                  <Youtube className="h-4 w-4" />
+                  <span>YouTube</span>
+                </Link>
+
+                <Link
+                  href={socialLinks.instagram}
+                  target="_blank"
+                  className="flex items-center gap-1 text-sm text-muted-foreground hover:text-pink-600 transition-colors"
+                >
+                  <Instagram className="h-4 w-4" />
+                  <span>Instagram</span>
+                </Link>
+
+              </div>
+            </div>
             <div className="flex items-center gap-3">
 
               {/* Logo */}
@@ -486,28 +573,43 @@ export function Navbar() {
                 Kontak
               </Link>
 
-              {/* 🌙 MOBILE ACTIONS */}
-              {/* <div className="pt-4 flex items-center justify-between border-t">
-
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                >
-                  <Sun className="h-5 w-5 dark:rotate-90 dark:scale-0 transition-all" />
-                  <Moon className="absolute h-5 w-5 rotate-90 scale-0 dark:rotate-0 dark:scale-100 transition-all" />
-                </Button>
-
-                <Button asChild>
-                  <Link href="/sign-in">Login</Link>
-                </Button>
-
-              </div> */}
-
             </div>
           </SheetContent>
         </Sheet>
 
+      </div>
+      <div
+        className={`xl:hidden border-t overflow-hidden transition-all duration-300 ${
+          showSocial ? "max-h-16 opacity-100" : "max-h-0 opacity-0 border-t-0"
+        }`}
+      >
+        <div className="container mx-auto flex justify-center items-center gap-6 py-2 px-4">
+
+          <Link
+            href={socialLinks.facebook}
+            target="_blank"
+            className="text-muted-foreground hover:text-blue-600 transition-colors"
+          >
+            <Facebook className="h-4 w-4" />
+          </Link>
+
+          <Link
+            href={socialLinks.youtube}
+            target="_blank"
+            className="text-muted-foreground hover:text-red-600 transition-colors"
+          >
+            <Youtube className="h-4 w-4" />
+          </Link>
+
+          <Link
+            href={socialLinks.instagram}
+            target="_blank"
+            className="text-muted-foreground hover:text-pink-600 transition-colors"
+          >
+            <Instagram className="h-4 w-4" />
+          </Link>
+
+        </div>
       </div>
     </header>
   )

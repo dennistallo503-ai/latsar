@@ -31,7 +31,7 @@ const quickAccess = [
 
 export function QuickAccessSection() {
   return (
-    <section className="bg-background py-12">
+    <section className="bg-muted/30 py-12">
       <div className="container mx-auto px-4">
 
         <div className="mb-8 text-center">
