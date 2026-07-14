@@ -190,7 +190,7 @@ export default function OrganizationStructurePage() {
                 width={1800}
                 height={1200}
                 priority
-                onClick={() => setOpenLightbox(true)}
+                onClick={() => setLightboxOpen(true)}
                 className="w-full cursor-zoom-in object-contain transition duration-300 hover:scale-[1.02]"
                 />
 
