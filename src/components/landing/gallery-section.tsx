@@ -20,6 +20,8 @@ import "yet-another-react-lightbox/plugins/captions.css";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
+import { FadeUp, ScaleIn, StaggerContainer, StaggerItem, SlideRight, SlideLeft, FadeIn } from "@/components/animations"
+
 interface Item {
   id: string;
   title: string;
@@ -54,67 +56,111 @@ export function GallerySection() {
   }, []);
 
   return (
-    <section className="bg-muted/30 py-24">
+    <section className="bg-muted/30 py-5">
       <div className="container mx-auto px-4">
 
         {/* HEADER */}
         <div className="mb-16 text-center">
+          <FadeUp>
           <Badge variant="outline" className="mb-4">
             Dokumentasi
           </Badge>
-
+          </FadeUp>
+          <FadeIn>
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Galeri Diskominfo
           </h2>
-
+          </FadeIn>
+          <FadeUp>
           <p className="mt-4 text-lg text-muted-foreground">
             Dokumentasi kegiatan Diskominfo Kabupaten TTS.
           </p>
+          </FadeUp>
         </div>
 
         {/* GRID */}
         <div>
+
+          {/* Header */}
           <div className="mb-8 flex items-center gap-3">
             <div className="rounded-lg bg-primary/10 p-2">
               <Images className="h-5 w-5 text-primary" />
             </div>
 
-            <h3 className="text-2xl font-semibold">
-              Galeri Foto
-            </h3>
+            <SlideRight once={true}>
+              <h3 className="text-2xl font-semibold">
+                Galeri Foto
+              </h3>
+            </SlideRight>
           </div>
 
+
+          {/* Gallery Card */}
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
             {photos.map((photo, i) => (
-              <div
+
+              <SlideRight
                 key={photo.id}
-                onClick={() => setIndex(i)}
-                className="group cursor-pointer overflow-hidden rounded-2xl border bg-card shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+                once={false}
+                delay={i * 0.15}
               >
-                <div className="overflow-hidden">
-                  <Image
-                    src={photo.image_url}
-                    alt={photo.title}
-                    width={600}
-                    height={400}
-                    className="h-64 w-full object-cover transition duration-500 group-hover:scale-110"
-                  />
+
+                <div
+                  onClick={() => setIndex(i)}
+                  className="
+                    group
+                    cursor-pointer
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    bg-card
+                    shadow-sm
+                    transition-all
+                    duration-300
+                    hover:-translate-y-2
+                    hover:shadow-xl
+                  "
+                >
+
+                  <div className="overflow-hidden">
+                    <Image
+                      src={photo.image_url}
+                      alt={photo.title}
+                      width={600}
+                      height={400}
+                      className="
+                        h-64
+                        w-full
+                        object-cover
+                        transition
+                        duration-500
+                        group-hover:scale-110
+                      "
+                    />
+                  </div>
+
+
+                  <div className="p-5">
+
+                    <h4 className="font-semibold transition-colors group-hover:text-primary">
+                      {photo.title}
+                    </h4>
+
+                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                      {photo.description}
+                    </p>
+
+                  </div>
+
                 </div>
 
-                <div className="p-5">
-                  <h4 className="font-semibold group-hover:text-primary transition-colors">
-                    {photo.title}
-                  </h4>
+              </SlideRight>
 
-                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                    {photo.description}
-                  </p>
-                </div>
-              </div>
             ))}
 
           </div>
+
         </div>
 
         {/* BUTTON */}

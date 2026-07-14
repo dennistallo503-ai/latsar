@@ -110,29 +110,30 @@ export function HeroSection({ page = "home" }) {
                 )}
 
                 {/* OVERLAY */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/50" />
+                {/* <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/50" /> */}
 
                 {/* CONTENT */}
-                <div className="relative z-10 container mx-auto flex h-full items-center px-4">
+              <div className="relative z-10 flex h-full items-center justify-center px-4">
+                <div className="max-w-4xl text-center text-white">
 
-                  <div className="max-w-4xl text-white">
+                  <h5 className="text-3xl font-bold leading-tight md:text-5xl">
+                    {slide.heading}
+                  </h5>
 
-                    <span className="inline-flex rounded-full border border-white/30 bg-white/10 px-4 py-1 text-xs font-medium backdrop-blur">
-                      Website Resmi Diskominfo TTS
-                    </span>
-
-                      <h5 className="mt-5 text-xl font-bold leading-tight md:text-5xl">
-                        {slide.heading}
-                      </h5>
-
-                      <p className="mt-4 max-w-2xl text-sm leading-6 text-gray-200 md:mt-6 md:text-lg md:leading-8">
-                        {slide.paragraph}
-                      </p>
-
-                  </div>
+                  <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-gray-200 md:text-lg md:leading-8">
+                    {slide.paragraph}
+                  </p>
 
                 </div>
-
+              </div>
+              {/* MARQUEE */}
+              <div className="absolute bottom-0 left-0 right-0 z-20 overflow-hidden bg-black/70 backdrop-blur-sm">
+                <div className="whitespace-nowrap py-3">
+                  <div className="inline-block animate-marquee text-sm font-medium text-white md:text-base">
+                    📢 Selamat Datang di Website Resmi Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan
+                  </div>
+                </div>
+              </div>
               </div>
 
             </CarouselItem>
@@ -161,10 +162,10 @@ export function HeroSection({ page = "home" }) {
             ))}
           </div>
 
-          <div className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur">
+          {/* <div className="rounded-full bg-black/40 px-4 py-2 text-sm font-medium text-white backdrop-blur">
             {String(current + 1).padStart(2, "0")} /{" "}
             {String(slides.length).padStart(2, "0")}
-          </div>
+          </div> */}
 
         </div>
 

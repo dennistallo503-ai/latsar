@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { FadeUp, ScaleIn, StaggerContainer, StaggerItem, SlideRight, SlideLeft, FadeIn } from "@/components/animations"
 
 import {
   FileText,
@@ -52,31 +53,35 @@ const units = [
     description:
       "Melaksanakan urusan persandian serta pengelolaan statistik sektoral daerah.",
     icon: ShieldCheck,
-    href: "/informasi/ps",
+    href: "/informasi/persandian-statistik",
   },
 ];
 
 export function OrganizationSection() {
   return (
-    <section className="bg-muted/30 py-16">
+    <section className="bg-muted/30 py-24">
       <div className="container mx-auto px-4">
 
         {/* Header */}
         <div className="mx-auto mb-16 max-w-3xl text-center">
+          <FadeUp once={true}>
+            <Badge variant="outline" className="mb-4">
+              Informasi Diskominfo Kab. Timor Tengah Selatan
+            </Badge>
+          </FadeUp>
 
-          <Badge variant="outline" className="mb-4">
-            Informasi Diskominfo Kab. Timor Tengah Selatan
-          </Badge>
+          <FadeUp once={true} delay={0.1}>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Bidang dan Sub Bagian
+            </h2>
+          </FadeUp>
 
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Bidang dan Sub Bagian
-          </h2>
-
-          <p className="mt-4 text-lg text-muted-foreground">
-            Unit kerja yang mendukung pelaksanaan tugas dan fungsi
-            Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan.
-          </p>
-
+          <FadeUp once={true} delay={0.2}>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Unit kerja yang mendukung pelaksanaan tugas dan fungsi
+              Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan.
+            </p>
+          </FadeUp>
         </div>
 
         {/* Row 1 */}
@@ -86,50 +91,65 @@ export function OrganizationSection() {
             const Icon = item.icon;
 
             return (
-              <Card
-                key={index}
-                className="
-                  group
-                  overflow-hidden
-                  border
-                  transition-all
-                  duration-300
-                  hover:-translate-y-2
-                  hover:border-primary
-                  hover:shadow-xl
-                "
+              <FadeIn
+                key={item.title}
+                once={false}
+                delay={index * 0.15}
+                className="h-full"
               >
-                <CardContent className="py-1">
+                <Card
+                  className="
+                    group
+                    flex
+                    h-full
+                    flex-col
+                    overflow-hidden
+                    border
+                    transition-all
+                    duration-300
+                    hover:-translate-y-2
+                    hover:border-primary
+                    hover:shadow-xl
+                  "
+                >
 
-                  <div className="mb-6 flex items-center justify-between">
+                  <CardContent className="flex h-full flex-col p-8">
 
-                    <div className="rounded-xl bg-primary/10 p-3">
-                      <Icon className="h-7 w-7 text-primary" />
+                    {/* Icon */}
+                    <div className="mb-6">
+                      <div className="inline-flex rounded-xl bg-primary/10 p-3">
+                        <Icon className="h-7 w-7 text-primary" />
+                      </div>
                     </div>
 
-                    <span className="text-5xl font-bold text-primary/10">
-                      0{index + 1}
-                    </span>
 
-                  </div>
+                    {/* Judul */}
+                    <h3 className="mb-4 text-xl font-semibold">
+                      {item.title}
+                    </h3>
 
-                  <h3 className="mb-4 text-xl font-semibold">
-                    {item.title}
-                  </h3>
 
-                  <p className="mb-6 leading-7 text-muted-foreground">
-                    {item.description}
-                  </p>
+                    {/* Deskripsi */}
+                    <p className="mb-6 flex-1 leading-7 text-muted-foreground">
+                      {item.description}
+                    </p>
 
-                  <Button variant="ghost" asChild className="px-0">
-                    <Link href={item.href}>
-                      Selengkapnya
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
 
-                </CardContent>
-              </Card>
+                    {/* Button */}
+                    <Button
+                      asChild
+                      className="mt-auto w-fit"
+                    >
+                      <Link href={item.href}>
+                        Selengkapnya
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+
+                  </CardContent>
+
+                </Card>
+              </FadeIn>
             );
           })}
 
@@ -142,50 +162,65 @@ export function OrganizationSection() {
             const Icon = item.icon;
 
             return (
-              <Card
-                key={index}
-                className="
-                  group
-                  overflow-hidden
-                  border
-                  transition-all
-                  duration-300
-                  hover:-translate-y-2
-                  hover:border-primary
-                  hover:shadow-xl
-                "
+              <FadeIn
+                key={item.title}
+                once={false}
+                delay={index * 0.15}
+                className="h-full"
               >
-                <CardContent className="py-1">
+                <Card
+                  className="
+                    group
+                    flex
+                    h-full
+                    flex-col
+                    overflow-hidden
+                    border
+                    transition-all
+                    duration-300
+                    hover:-translate-y-2
+                    hover:border-primary
+                    hover:shadow-xl
+                  "
+                >
 
-                  <div className="mb-6 flex items-center justify-between">
+                  <CardContent className="flex h-full flex-col p-8">
 
-                    <div className="rounded-xl bg-primary/10 p-3">
-                      <Icon className="h-7 w-7 text-primary" />
+                    {/* Icon */}
+                    <div className="mb-6">
+                      <div className="inline-flex rounded-xl bg-primary/10 p-3">
+                        <Icon className="h-7 w-7 text-primary" />
+                      </div>
                     </div>
 
-                    <span className="text-5xl font-bold text-primary/10">
-                      0{index + 3}
-                    </span>
 
-                  </div>
+                    {/* Judul */}
+                    <h3 className="mb-4 text-lg font-semibold">
+                      {item.title}
+                    </h3>
 
-                  <h3 className="mb-4 text-lg font-semibold">
-                    {item.title}
-                  </h3>
 
-                  <p className="mb-6 leading-7 text-muted-foreground">
-                    {item.description}
-                  </p>
+                    {/* Deskripsi */}
+                    <p className="mb-6 flex-1 leading-7 text-muted-foreground">
+                      {item.description}
+                    </p>
 
-                  <Button variant="ghost" asChild className="px-0">
-                    <Link href={item.href}>
-                      Selengkapnya
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
 
-                </CardContent>
-              </Card>
+                    {/* Button */}
+                    <Button
+                      asChild
+                      className="mt-auto w-fit"
+                    >
+                      <Link href={item.href}>
+                        Selengkapnya
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+
+                  </CardContent>
+
+                </Card>
+              </FadeIn>
             );
           })}
 

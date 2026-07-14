@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
-
+import { FadeIn, StaggerContainer, StaggerItem } from "@/components/animations"
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import Lightbox from "yet-another-react-lightbox";
@@ -112,9 +112,9 @@ export default function PublicGallery({
 
       {/* HEADER */}
       <Hero
-  title={title}
-  description={description}
-/>
+        title={title}
+        description={description}
+      />
 
       {/* SORT */}
       <section className="py-6 border-b">
@@ -139,42 +139,85 @@ export default function PublicGallery({
       <section className="py-10">
         <div className="container mx-auto max-w-6xl px-4">
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <StaggerContainer
+          key={page}
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        >
 
-            {paginated.map((item) => (
+          {paginated.map((item, index) => (
+
+            <StaggerItem
+              key={item.id}
+              delay={index * 0.12}
+            >
+
               <div
-                key={item.id}
-                className="overflow-hidden rounded-2xl border bg-card shadow-sm"
+                className="
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  bg-card
+                  shadow-sm
+                  transition-all
+                  duration-300
+                  hover:-translate-y-2
+                  hover:shadow-xl
+                "
               >
 
                 <div
                   onClick={() => openLightbox(item)}
-                  className="relative h-52 cursor-pointer overflow-hidden"
+                  className="
+                    relative
+                    h-52
+                    cursor-pointer
+                    overflow-hidden
+                  "
                 >
+
                   <Image
                     src={item.image_url}
                     alt={item.title}
                     fill
-                    className="object-cover transition duration-300 hover:scale-105"
+                    className="
+                      object-cover
+                      transition
+                      duration-500
+                      hover:scale-110
+                    "
                   />
+
                 </div>
 
+
                 <div className="p-4">
+
                   <h3 className="font-bold text-primary">
                     {item.title}
                   </h3>
 
+
                   {item.description && (
-                    <p className="text-sm text-muted-foreground">
+
+                    <p className="
+                      mt-2
+                      text-sm
+                      text-muted-foreground
+                    ">
                       {item.description}
                     </p>
+
                   )}
+
                 </div>
 
               </div>
-            ))}
 
-          </div>
+            </StaggerItem>
+
+          ))}
+
+        </StaggerContainer>
 
           {/* PAGINATION */}
           {totalPage > 1 && (() => {

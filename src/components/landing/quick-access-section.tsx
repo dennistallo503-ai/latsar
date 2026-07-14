@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { FadeUp, ScaleIn, StaggerContainer, StaggerItem, SlideRight } from "@/components/animations"
 
 const quickAccess = [
   {
@@ -35,42 +36,50 @@ export function QuickAccessSection() {
       <div className="container mx-auto px-4">
 
         <div className="mb-8 text-center">
-          <h2 className="text-3xl font-bold">
-            Akses Cepat
-          </h2>
+          <FadeUp once={true}>
+            <h2 className="text-3xl font-bold">
+              Aplikasi & Website
+            </h2>
+          </FadeUp>
 
-          <p className="mt-2 text-muted-foreground">
-            Akses langsung ke website mitra dan layanan pemerintahan.
-          </p>
+          <FadeUp once={true} delay={0.1}>
+            <p className="mt-2 text-muted-foreground">
+              Akses langsung ke website mitra dan layanan pemerintahan.
+            </p>
+          </FadeUp>
         </div>
-
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {quickAccess.map((item) => (
-            <a
+          {quickAccess.map((item, i) => (
+            <FadeUp
               key={item.title}
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group rounded-xl border bg-card p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-primary hover:shadow-lg"
+              once={false}      
+              delay={i * 0.1}
             >
-              <div className="mb-5 flex justify-center">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={72}
-                  height={72}
-                  className="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-110"
-                />
-              </div>
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block rounded-xl border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-primary hover:shadow-xl"
+              >
+                <div className="mb-5 flex justify-center">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    width={72}
+                    height={72}
+                    className="h-16 w-16 object-contain transition-transform duration-300 group-hover:scale-110"
+                  />
+                </div>
 
-              <h3 className="text-center font-semibold">
-                {item.title}
-              </h3>
+                <h3 className="text-center font-semibold">
+                  {item.title}
+                </h3>
 
-              <p className="mt-2 text-center text-sm text-muted-foreground">
-                {item.description}
-              </p>
-            </a>
+                <p className="mt-2 text-center text-sm text-muted-foreground">
+                  {item.description}
+                </p>
+              </a>
+            </FadeUp>
           ))}
         </div>
 

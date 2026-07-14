@@ -3,26 +3,20 @@
 import { useEffect, useMemo, useState } from "react"
 import Image from "next/image"
 import { supabase } from "@/lib/supabaseClient"
-import { ChevronLeft, ChevronRight, FileText, Download } from "lucide-react"
+import { ChevronLeft, ChevronRight, FileText, Download, Search } from "lucide-react"
+import { FadeIn } from "@/components/animations"
 
-import Lightbox from "yet-another-react-lightbox";
-import Zoom from "yet-another-react-lightbox/plugins/zoom";
-import Captions from "yet-another-react-lightbox/plugins/captions";
-import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 
 import {Hero} from '@/components/hero/';
 
-import "yet-another-react-lightbox/styles.css";
-import "yet-another-react-lightbox/plugins/captions.css";
-import "yet-another-react-lightbox/plugins/thumbnails.css";
 
 type Item = {
   id: string
   title: string
   description: string | null
-  type: "pdf" | "image"
-  image_url: string | null
+  type: "pdf"
   pdf_url: string | null
+  created_at: string
 }
 
 interface Props {
@@ -40,14 +34,15 @@ export default function PublicCMS({
 }: Props) {
 
   const [items, setItems] = useState<Item[]>([])
-  const [filter, setFilter] = useState<"all" | "pdf" | "image">("all")
+  const [filter, setFilter] = useState<"all" | "latest" | "oldest">("latest") 
   const [page, setPage] = useState(1)
+  const [search, setSearch] = useState("")
+
+  const ITEMS_PER_PAGE = 10
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
-    // LIGHTBOX STATE (FIX IMPORTANT)
-const [index, setIndex] = useState(-1)
 
   const getDistance = (touches: React.TouchList) => {
     const dx = touches[0].clientX - touches[1].clientX
@@ -81,13 +76,51 @@ const [index, setIndex] = useState(-1)
 
   // ================= FILTER =================
   const filtered = useMemo(() => {
-    if (filter === "all") return items
-    return items.filter((i) => i.type === filter)
-  }, [filter, items])
 
-  const imageList = useMemo(() => {
-    return items.filter((i) => i.type === "image")
-  }, [items])
+    let result = [...items]
+
+
+    // SEARCH
+    if (search.trim() !== "") {
+
+      result = result.filter((item) =>
+        item.title
+          .toLowerCase()
+          .includes(search.toLowerCase())
+        ||
+        item.description
+          ?.toLowerCase()
+          .includes(search.toLowerCase())
+      )
+
+    }
+
+
+
+    // SORT
+    if (filter === "oldest") {
+
+      result.sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() -
+          new Date(b.created_at).getTime()
+      )
+
+    } else {
+
+      result.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() -
+          new Date(a.created_at).getTime()
+      )
+
+    }
+
+
+    return result
+
+
+  }, [items, filter, search])
 
   const paginated = useMemo(() => {
     const start = (page - 1) * ITEMS_PER_PAGE
@@ -98,20 +131,6 @@ const [index, setIndex] = useState(-1)
 
   // ================= LIGHTBOX =================
 
-  // LIGHTBOX PAKAI DARI GALLERY DAN LAYANAN
-
-const imageSlides = useMemo(() => {
-  return imageList.map((item) => ({
-    src: item.image_url || "",
-    title: item.title,
-    description: item.description ?? "",
-  }))
-}, [imageList])
-
-const openImage = (item: Item) => {
-  const i = imageList.findIndex((img) => img.id === item.id)
-  setIndex(i)
-}
   return (
     <div className="min-h-screen bg-background">
 
@@ -122,169 +141,474 @@ const openImage = (item: Item) => {
       />
       {/* CONTENT */}
       <section className="py-16">
+
         <div className="container mx-auto max-w-6xl px-4">
 
+
           {/* FILTER */}
-          <div className="mb-10 flex justify-center gap-3 flex-wrap">
+          <div className="mb-10 flex justify-center gap-3">
+
             {[
-              { label: "Semua", value: "all" },
-              { label: "Dokumen", value: "pdf" },
-              { label: "Gambar", value: "image" },
+              { label: "Terbaru", value: "latest" },
+              { label: "Terlama", value: "oldest" },
             ].map((btn) => (
+
               <button
                 key={btn.value}
                 onClick={() => {
                   setFilter(btn.value as any)
                   setPage(1)
                 }}
-                className={`rounded-full border px-5 py-2 transition ${
-                  filter === btn.value
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-accent"
-                }`}
+                className={`
+                  rounded-full
+                  border
+                  px-5
+                  py-2
+                  transition
+                  ${
+                    filter === btn.value
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent"
+                  }
+                `}
               >
+
                 {btn.label}
+
               </button>
+
             ))}
+
           </div>
 
-          {/* GRID */}
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {/* SEARCH */}
 
-            {paginated.map((item) => (
-              <div
-                key={item.id}
-                className="rounded-2xl border bg-card overflow-hidden"
-              >
+          <div className="mb-6 flex justify-center">
 
-                {/* IMAGE */}
-                {item.type === "image" && (
-                  <div
-                    className="relative h-56 cursor-pointer"
-                    onClick={() => openImage(item)}
-                  >
-                    <Image
-                      src={item.image_url || "/placeholder.png"}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                )}
+            <div className="relative w-full max-w-xl">
 
-                {/* PDF */}
-                {item.type === "pdf" && (
-                  <div className="flex h-56 items-center justify-center bg-muted">
-                    <FileText className="h-16 w-16 text-primary" />
-                  </div>
-                )}
+              <Search className="
+                absolute
+                left-4
+                top-1/2
+                h-5
+                w-5
+                -translate-y-1/2
+                text-muted-foreground
+              "/>
 
-                {/* CONTENT */}
-                <div className="p-5">
-                  <h3 className="font-bold text-primary">
-                    {item.title}
-                  </h3>
 
-                  <p className="text-sm text-muted-foreground">
-                    {item.description}
-                  </p>
-
-                  {item.type === "pdf" && (
-                    <a
-                      href={item.pdf_url || "#"}
-                      target="_blank"
-                      className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground"
-                    >
-                      <Download className="h-4 w-4" />
-                      Preview Dokumen
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* PAGINATION */}
-          {totalPages > 1 && (
-            <div className="mt-10 flex justify-center gap-2">
-
-              {/* PREV */}
-              <button
-                onClick={() => {
-                  setPage((p) => Math.max(p - 1, 1))
-                  window.scrollTo({ top: 0, behavior: "smooth" })
+              <input
+                type="text"
+                placeholder="Cari dokumen..."
+                value={search}
+                onChange={(e)=>{
+                  setSearch(e.target.value)
+                  setPage(1)
                 }}
-                className="border px-3 py-2 rounded"
-              >
-                <ChevronLeft />
-              </button>
-
-              {/* NUMBER */}
-              {Array.from(
-                { length: Math.min(3, totalPages) },
-                (_, i) => i + 1
-              ).map((p) => (
-                <button
-                  key={p}
-                  onClick={() => {
-                    setPage(p)
-                    window.scrollTo({ top: 0, behavior: "smooth" })
-                  }}
-                  className={`border px-3 py-2 rounded ${
-                    page === p ? "bg-primary text-white" : ""
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
-
-              {/* NEXT */}
-              <button
-                onClick={() => {
-                  setPage((p) => Math.min(p + 1, totalPages))
-                  window.scrollTo({ top: 0, behavior: "smooth" })
-                }}
-                className="border px-3 py-2 rounded"
-              >
-                <ChevronRight />
-              </button>
+                className="
+                  w-full
+                  rounded-xl
+                  border
+                  bg-background
+                  py-3
+                  pl-12
+                  pr-5
+                  outline-none
+                  focus:border-primary
+                "
+              />
 
             </div>
+          </div>
+
+          {/* TABLE */}
+          <FadeIn key={page}>
+          <div className="overflow-hidden rounded-2xl border bg-card shadow-sm">
+
+            <div className="overflow-x-auto">
+
+              <table className="w-full text-sm">
+
+
+                {/* HEADER */}
+
+                <thead className="bg-muted/50">
+
+                  <tr className="border-b">
+
+
+                    <th className="px-5 py-4 text-left font-semibold">
+                      No
+                    </th>
+
+
+                    <th className="px-5 py-4 text-left font-semibold">
+                      Nama Dokumen
+                    </th>
+
+
+                    <th className="px-5 py-4 text-left font-semibold">
+                      Deskripsi
+                    </th>
+
+
+                    <th className="px-5 py-4 text-center font-semibold">
+                      Aksi
+                    </th>
+
+
+                  </tr>
+
+                </thead>
+
+
+
+
+
+                {/* BODY */}
+
+                <tbody>
+
+
+                  {paginated.length ? (
+
+                    paginated.map((item, index) => (
+
+                      <tr
+                        key={item.id}
+                        className="
+                          border-b
+                          transition
+                          hover:bg-muted/40
+                        "
+                      >
+
+
+
+                        {/* NOMOR */}
+
+                        <td className="px-5 py-4">
+
+                          {(page - 1) * ITEMS_PER_PAGE + index + 1}
+
+                        </td>
+
+
+
+
+
+                        {/* DOKUMEN */}
+
+                        <td className="px-5 py-4">
+
+
+                          <div className="flex items-center gap-3">
+
+
+                            <div
+                              className="
+                                flex
+                                h-11
+                                w-11
+                                items-center
+                                justify-center
+                                rounded-lg
+                                bg-blue-500/10
+                              "
+                            >
+
+                              <FileText
+                                className="
+                                  h-6
+                                  w-6
+                                  text-blue-600
+                                "
+                              />
+
+                            </div>
+
+
+
+                            <div>
+
+
+                              <p className="font-semibold text-primary">
+
+                                {item.title}
+
+                              </p>
+
+
+
+                              <p className="text-xs text-muted-foreground">
+
+                                Dokumen PDF
+
+                              </p>
+
+
+                            </div>
+
+
+                          </div>
+
+
+                        </td>
+
+
+
+
+
+
+
+                        {/* DESKRIPSI */}
+
+                        <td className="max-w-lg px-5 py-4">
+
+
+                          <p className="line-clamp-2 text-muted-foreground">
+
+                            {item.description}
+
+                          </p>
+
+
+                        </td>
+
+
+
+
+
+
+
+
+                        {/* AKSI */}
+
+                        <td className="px-5 py-4 text-center">
+
+
+                          <a
+                            href={item.pdf_url || "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="
+                              inline-flex
+                              items-center
+                              gap-2
+                              rounded-lg
+                              bg-primary
+                              px-4
+                              py-2
+                              text-sm
+                              text-primary-foreground
+                              transition
+                              hover:opacity-90
+                            "
+                          >
+
+                            <Download
+                              className="h-4 w-4"
+                            />
+
+                            Preview PDF
+
+
+                          </a>
+
+
+                        </td>
+
+
+
+
+                      </tr>
+
+
+                    ))
+
+
+                  ) : (
+
+
+                    <tr>
+
+                      <td
+                        colSpan={4}
+                        className="
+                          px-5
+                          py-10
+                          text-center
+                          text-muted-foreground
+                        "
+                      >
+
+                        Belum ada dokumen PDF
+
+                      </td>
+
+
+                    </tr>
+
+
+                  )}
+
+
+
+                </tbody>
+
+
+              </table>
+
+
+            </div>
+
+
+          </div>
+          </FadeIn>
+
+
+
+
+
+
+          {/* PAGINATION */}
+
+          {totalPages > 1 && (
+
+            <div className="mt-10 flex justify-center gap-2">
+
+
+              {/* PREV */}
+
+              <button
+
+                onClick={() => {
+
+                  setPage((p) => Math.max(p - 1, 1))
+
+                  window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                  })
+
+                }}
+
+                className="
+                  rounded
+                  border
+                  px-3
+                  py-2
+                "
+
+              >
+
+                <ChevronLeft />
+
+              </button>
+
+
+
+
+
+              {/* NUMBER */}
+
+              {Array.from(
+                {
+                  length: Math.min(3, totalPages)
+                },
+                (_, i) => i + 1
+
+              ).map((p) => (
+
+                <button
+
+                  key={p}
+
+                  onClick={() => {
+
+                    setPage(p)
+
+                    window.scrollTo({
+                      top: 0,
+                      behavior: "smooth"
+                    })
+
+                  }}
+
+                  className={`
+                    rounded
+                    border
+                    px-3
+                    py-2
+                    ${
+                      page === p
+                        ? "bg-primary text-white"
+                        : ""
+                    }
+                  `}
+
+                >
+
+                  {p}
+
+                </button>
+
+
+              ))}
+
+
+
+
+
+
+              {/* NEXT */}
+
+              <button
+
+                onClick={() => {
+
+                  setPage((p) =>
+                    Math.min(
+                      p + 1,
+                      totalPages
+                    )
+                  )
+
+
+                  window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                  })
+
+
+                }}
+
+                className="
+                  rounded
+                  border
+                  px-3
+                  py-2
+                "
+
+              >
+
+                <ChevronRight />
+
+              </button>
+
+
+
+            </div>
+
           )}
 
-        </div>
-      </section>
 
-<Lightbox
-  open={index >= 0}
-  close={() => setIndex(-1)}
-  index={index}
-  plugins={[Zoom, Captions, Thumbnails]}
-  slides={imageSlides}
-  carousel={{
-    finite: false,
-    preload: 2,
-    padding: "16px",
-    spacing: "12%",
-  }}
-  zoom={{
-    maxZoomPixelRatio: 4,
-    zoomInMultiplier: 2,
-    wheelZoomDistanceFactor: 120,
-    pinchZoomDistanceFactor: 120,
-  }}
-  captions={{
-    descriptionTextAlign: "center",
-    descriptionMaxLines: 3,
-  }}
-  thumbnails={{
-    position: "bottom",
-    width: 100,
-    height: 70,
-    borderRadius: 8,
-    gap: 10,
-  }}
-/>
+
+        </div>
+
+
+      </section>
 
     </div>
   )

@@ -431,13 +431,6 @@ export function Navbar() {
                   width={34}
                   height={34}
                 />
-
-                {/* <Image
-                  src="/logo/tts-logo.svg"
-                  alt="Logo TTS"
-                  width={32}
-                  height={32}
-                /> */}
               </div>
 
               {/* Separator */}

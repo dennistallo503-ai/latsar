@@ -46,7 +46,7 @@
   --radius: 0.625rem;
 
   /* Base */
-  --background: oklch(0.99 0.01 255);
+  --background: oklch(0.968 0.007 247.9);
   --foreground: oklch(0.15 0.02 255);
 
   /* Card */
@@ -65,7 +65,7 @@
   --secondary: oklch(0.96 0.01 255);
   --secondary-foreground: oklch(0.25 0.02 255);
 
-  --muted: oklch(0.96 0.01 255);
+  --muted: oklch(0.968 0.007 247.9);
   --muted-foreground: oklch(0.45 0.02 255);
 
   --accent: oklch(0.94 0.02 255);
@@ -199,4 +199,18 @@ html {
 
 .animate-logo-scroll:hover {
   animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
 }

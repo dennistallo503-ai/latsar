@@ -6,6 +6,8 @@ import { QuickAccessSection } from '@/components/landing/quick-access-section'
 import { AboutSection } from '@/components/landing/about-section'
 import { OrganizationSection } from "@/components/landing/organization-section";
 import { GallerySection } from "@/components/landing/gallery-section";
+import VisitorStats from "@/components/landing/visitor-stats";
+
 
 export function LandingPageContent() {
   const [themeCustomizerOpen, setThemeCustomizerOpen] = React.useState(false)
@@ -21,6 +23,7 @@ export function LandingPageContent() {
         <AboutSection />
         <OrganizationSection />
         <GallerySection />
+        <VisitorStats />
       </main>
     </div>
   )
