@@ -7,7 +7,7 @@ import { AboutSection } from '@/components/landing/about-section'
 import { OrganizationSection } from "@/components/landing/organization-section";
 import { GallerySection } from "@/components/landing/gallery-section";
 import VisitorStats from "@/components/landing/visitor-stats";
-
+import VisitorTracker from "@/components/VisitorTracker";
 
 export function LandingPageContent() {
   const [themeCustomizerOpen, setThemeCustomizerOpen] = React.useState(false)
@@ -18,6 +18,7 @@ export function LandingPageContent() {
 
       {/* Main Content */}
       <main>
+        <VisitorTracker />
         <HeroSection />
         <QuickAccessSection />
         <AboutSection />
