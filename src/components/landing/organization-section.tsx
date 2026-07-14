@@ -95,7 +95,6 @@ export function OrganizationSection() {
                 key={item.title}
                 once={false}
                 delay={index * 0.15}
-                className="h-full"
               >
                 <Card
                   className="
@@ -166,7 +165,6 @@ export function OrganizationSection() {
                 key={item.title}
                 once={false}
                 delay={index * 0.15}
-                className="h-full"
               >
                 <Card
                   className="
