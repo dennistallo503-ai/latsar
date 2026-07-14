@@ -121,7 +121,6 @@ export default function VisitorStats() {
                 key={item.title}
                 once={false}
                 delay={index * 0.15}
-                className="h-full"
               >
 
 
