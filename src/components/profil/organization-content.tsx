@@ -2,217 +2,271 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import { X, Mail, Phone, GraduationCap, BadgeCheck, User } from "lucide-react";
+import {Hero} from '@/components/hero/';
+import OrganizationChart from "./components/organization/OrganizationChart";
+
+interface OrganizationMember {
+
+  id: string;
+
+  name: string;
+
+  position: string;
+
+  category: string;
+
+  sort_order: number;
+
+  image: string | null;
+
+  nip: string | null;
+
+  pangkat: string | null;
+
+  pendidikan: string | null;
+
+  bio: string | null;
+
+}
 
 export default function OrganizationStructurePage() {
+
   const [open, setOpen] = useState(false);
 
-  const [selectedLeader, setSelectedLeader] = useState<any>(null);
+  const [selectedLeader, setSelectedLeader] =
+    useState<any>(null);
+
+
+  const [members, setMembers] =
+    useState<OrganizationMember[]>([]);
+
+
+  const [loading, setLoading] =
+    useState(true);
+
+
+
+  // ==========================
+  // LOAD DATA ORGANIZATION
+  // ==========================
+
+  async function loadOrganization() {
+
+    try {
+
+      const { data, error } =
+        await supabase
+          .from("organization_members")
+          .select("*")
+          .eq(
+            "is_active",
+            true
+          )
+          .order(
+            "sort_order",
+            {
+              ascending: true,
+            }
+          );
+
+
+      if (error)
+        throw error;
+
+
+      setMembers(
+        data || []
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "LOAD ORGANIZATION ERROR",
+        error
+      );
+
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
+
+
+  // ==========================
+  // ESC MODAL
+  // ==========================
 
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
+
+    const handleEsc = (
+      e: KeyboardEvent
+    ) => {
+
       if (e.key === "Escape") {
+
         setOpen(false);
+
         setSelectedLeader(null);
+
       }
+
     };
 
-    window.addEventListener("keydown", handleEsc);
 
-    return () =>
-      window.removeEventListener("keydown", handleEsc);
+    window.addEventListener(
+      "keydown",
+      handleEsc
+    );
+
+
+    return () => {
+
+      window.removeEventListener(
+        "keydown",
+        handleEsc
+      );
+
+    };
+
+
   }, []);
 
+
+
+
   // ==========================
-  // DATA PIMPINAN
+  // LOAD SUPABASE
   // ==========================
 
-  const kepalaDinas = {
-    name: "Nama Kepala Dinas",
-    position: "Kepala Dinas",
+  useEffect(() => {
 
-    image: "/images/pimpinan/kepala-dinas.jpeg",
+    loadOrganization();
 
-    nip: "1978xxxxxxxxxxxxx",
+  }, []);
 
-    pangkat: "Pembina Utama Muda",
 
-    pendidikan: "S2 Ilmu Komunikasi",
 
-    email: "kadis@tts.go.id",
 
-    phone: "08123456789",
+  // ==========================
+  // MAPPING ORGANIZATION
+  // ==========================
 
-    bio:
-      "Memimpin penyelenggaraan urusan pemerintahan bidang komunikasi, informatika, statistik dan persandian di Kabupaten Timor Tengah Selatan.",
-  };
+
+  const kepalaDinas =
+    members.find(
+      item =>
+        item.category === "pimpinan"
+    );
+
+
+
+  const sekretarisDinas =
+    members.find(
+      item =>
+        item.category === "sekretariat"
+    );
+
+
+
+  const kasubbagProgram =
+    members.find(
+      item =>
+        item.category === "kasubbag_program"
+    );
+
+
+
+  const kasubbagKeuangan =
+    members.find(
+      item =>
+        item.category === "kasubbag_keuangan"
+    );
+
+
 
   const kepalaBidang = [
-    {
-      name: "Nama Kabid IKP",
 
-      position:
-        "Kepala Bidang Informasi dan Komunikasi Publik",
+    members.find(
+      item =>
+        item.category === "bidang_ikp"
+    ),
 
-      image: "/images/pimpinan/kabid-ikp.jpeg",
 
-      nip: "1980xxxxxxxx",
+    members.find(
+      item =>
+        item.category === "bidang_tik"
+    ),
 
-      pangkat: "Pembina",
 
-      pendidikan: "S2",
+    members.find(
+      item =>
+        item.category === "bidang_ps"
+    ),
 
-      email: "ikp@tts.go.id",
 
-      phone: "081111111",
+  ].filter(Boolean);
 
-      bio:
-        "Bertanggung jawab terhadap pengelolaan informasi publik dan hubungan media.",
-    },
-
-    {
-      name: "Nama Kabid Aptika",
-
-      position:
-        "Kepala Bidang Aplikasi Informatika",
-
-      image: "/images/pimpinan/kabid-tik.jpeg",
-
-      nip: "1982xxxxxxxx",
-
-      pangkat: "Pembina",
-
-      pendidikan: "S2",
-
-      email: "aptika@tts.go.id",
-
-      phone: "082222222",
-
-      bio:
-        "Bertanggung jawab terhadap pengembangan SPBE, aplikasi dan infrastruktur digital.",
-    },
-
-    {
-      name: "Nama Kabid Statistik",
-
-      position:
-        "Kepala Bidang Statistik dan Persandian",
-
-      image: "/images/pimpinan/kabid-ps.jpeg",
-
-      nip: "1983xxxxxxxx",
-
-      pangkat: "Pembina",
-
-      pendidikan: "S2",
-
-      email: "statistik@tts.go.id",
-
-      phone: "083333333",
-
-      bio:
-        "Mengelola data statistik sektoral serta penyelenggaraan persandian daerah.",
-    },
-  ];
-
-  const kepalaSubBagian = [
-    {
-      name: "Nama Kasubbag Umum",
-
-      position:
-        "Kepala Sub Bagian Umum dan Kepegawaian",
-
-      image: "/images/pimpinan/kasubag-tu.jpeg",
-
-      nip: "1984xxxxxxxx",
-
-      pangkat: "Penata",
-
-      pendidikan: "S1",
-
-      email: "umum@tts.go.id",
-
-      phone: "084444444",
-
-      bio:
-        "Mengelola administrasi umum, kepegawaian dan tata usaha.",
-    },
-
-    {
-      name: "Nama Kasubbag Keuangan",
-
-      position:
-        "Kepala Sub Bagian Perencanaan dan Keuangan",
-
-      image: "/images/pimpinan/kasubag-keuangan.jpeg",
-
-      nip: "1985xxxxxxxx",
-
-      pangkat: "Penata",
-
-      pendidikan: "S1",
-
-      email: "keuangan@tts.go.id",
-
-      phone: "085555555",
-
-      bio:
-        "Mengelola perencanaan program, penganggaran dan keuangan dinas.",
-    },
-  ];
-
-  const LeaderCard = ({ leader, size = "md" }: any) => (
-    <div
-      onClick={() => setSelectedLeader(leader)}
-      className="group cursor-pointer rounded-3xl border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-    >
-      <div
-        className={`relative mx-auto overflow-hidden rounded-full border-4 border-primary/20 ${
-          size === "lg"
-            ? "h-40 w-40"
-            : "h-28 w-28"
-        }`}
-      >
-        <Image
-          src={leader.image}
-          alt={leader.name}
-          fill
-          className="object-cover transition duration-500 group-hover:scale-105"
-        />
-      </div>
-
-      <div className="mt-5 text-center">
-
-        <h4 className="font-semibold">
-          {leader.name}
-        </h4>
-
-        <p className="mt-2 text-sm text-muted-foreground">
-          {leader.position}
-        </p>
-
-      </div>
-
-    </div>
+  const jfSekretariat =
+  members.filter(
+    item =>
+    item.category === "jf_sekretariat"
   );
+
+
+  const jfIKP =
+  members.filter(
+    item =>
+    item.category === "jf_ikp"
+  );
+
+
+  const jfTIK =
+  members.filter(
+    item =>
+    item.category === "jf_tik"
+  );
+
+
+  const jfPS =
+  members.filter(
+    item =>
+    item.category === "jf_ps"
+  );
+
+
+
+
+  // ==========================
+  // LOADING
+  // ==========================
+
+  if (loading) {
+
+    return (
+      <div className="py-10 text-center">
+        Memuat struktur organisasi...
+      </div>
+    );
+
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
 
       {/* HEADER */}
-      <section className="relative bg-primary text-primary-foreground">
-        <div className="absolute inset-0 bg-black/10" />
-
-        <div className="container relative mx-auto px-4 py-24 text-center">
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-            Struktur Organisasi
-          </h1>
-
-          <p className="mt-4 text-base md:text-lg text-primary-foreground/90">
-            Dinas Komunikasi dan Informatika Kabupaten Timor Tengah Selatan
-          </p>
-        </div>
-      </section>
+      <>
+        <Hero 
+          title="Struktur Organisasi"
+          description="Dinas Kominfo Kabupaten TTS"
+        />
+      </>
 
       {/* CONTENT */}
       <section className="py-16 md:py-20">
@@ -225,7 +279,7 @@ export default function OrganizationStructurePage() {
               onClick={() => setOpen(true)}
             >
               <Image
-                src="/images/struktur-organisasi.jpeg"
+                src="/images/struktur.jpeg"
                 alt="Struktur Organisasi Diskominfo TTS"
                 fill
                 priority
@@ -247,155 +301,31 @@ export default function OrganizationStructurePage() {
           {/* PIMPINAN */}
           {/* ===================================== */}
 
-          <section className="space-y-16">
+          <OrganizationChart
 
-            <div className="text-center">
+            kepalaDinas={kepalaDinas}
 
-              <h2 className="text-3xl font-bold">
-                Profil Pimpinan
-              </h2>
+            sekretarisDinas={sekretarisDinas}
 
-              <p className="mt-3 text-muted-foreground max-w-2xl mx-auto">
-                Klik pada foto pejabat untuk melihat profil lengkap.
-              </p>
+            kasubbagProgram={kasubbagProgram}
 
-            </div>
+            kasubbagKeuangan={kasubbagKeuangan}
 
-            {/* ================= Kepala Dinas ================= */}
+            kepalaBidang={kepalaBidang}
 
-            <div className="flex justify-center">
+            jfSekretariat={jfSekretariat}
 
-              <div
-                onClick={() => setSelectedLeader(kepalaDinas)}
-                className="group cursor-pointer w-full max-w-sm rounded-3xl border bg-card p-8 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-              >
+            jfIKP={jfIKP}
 
-                <div className="relative mx-auto h-40 w-40 overflow-hidden rounded-full border-4 border-primary/20">
+            jfTIK={jfTIK}
 
-                  <Image
-                    src={kepalaDinas.image}
-                    alt={kepalaDinas.name}
-                    fill
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
+            jfPS={jfPS}
 
-                </div>
+            onSelect={setSelectedLeader}
 
-                <div className="mt-6 text-center">
+            onOpenChart={() => setOpen(true)}
 
-                  <h3 className="text-xl font-bold">
-                    {kepalaDinas.name}
-                  </h3>
-
-                  <p className="mt-2 text-primary font-medium">
-                    {kepalaDinas.position}
-                  </p>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* ================= Kepala Bidang ================= */}
-
-            <div>
-
-              <h3 className="mb-8 text-center text-2xl font-semibold">
-                Kepala Bidang
-              </h3>
-
-              <div className="grid gap-6 md:grid-cols-3">
-
-                {kepalaBidang.map((item) => (
-
-                  <div
-                    key={item.name}
-                    onClick={() => setSelectedLeader(item)}
-                    className="group cursor-pointer rounded-3xl border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-                  >
-
-                    <div className="relative mx-auto h-32 w-32 overflow-hidden rounded-full border-4 border-primary/20">
-
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                      />
-
-                    </div>
-
-                    <div className="mt-5 text-center">
-
-                      <h4 className="font-semibold">
-                        {item.name}
-                      </h4>
-
-                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                        {item.position}
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                ))}
-
-              </div>
-
-            </div>
-
-            {/* ================= Kepala Sub Bagian ================= */}
-
-            <div>
-
-              <h3 className="mb-8 text-center text-2xl font-semibold">
-                Kepala Sub Bagian
-              </h3>
-
-              <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
-
-                {kepalaSubBagian.map((item) => (
-
-                  <div
-                    key={item.name}
-                    onClick={() => setSelectedLeader(item)}
-                    className="group cursor-pointer rounded-3xl border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
-                  >
-
-                    <div className="relative mx-auto h-32 w-32 overflow-hidden rounded-full border-4 border-primary/20">
-
-                      <Image
-                        src={item.image}
-                        alt={item.name}
-                        fill
-                        className="object-cover transition duration-500 group-hover:scale-105"
-                      />
-
-                    </div>
-
-                    <div className="mt-5 text-center">
-
-                      <h4 className="font-semibold">
-                        {item.name}
-                      </h4>
-
-                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                        {item.position}
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                ))}
-
-              </div>
-
-            </div>
-
-          </section>
+          />
 
         </div>
       </section>
@@ -419,7 +349,7 @@ export default function OrganizationStructurePage() {
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src="/images/struktur-organisasi.jpeg"
+              src="/images/struktur.jpeg"
               alt="Preview Struktur Organisasi"
               fill
               priority
@@ -491,7 +421,7 @@ export default function OrganizationStructurePage() {
                   <div className="flex gap-3">
                     <User className="mt-1 h-5 w-5 text-primary" />
                     <div>
-                      <p className="text-sm text-muted-foreground">Pangkat</p>
+                      <p className="text-sm text-muted-foreground">Pangkat/Golongan</p>
                       <p>{selectedLeader.pangkat}</p>
                     </div>
                   </div>
@@ -501,22 +431,6 @@ export default function OrganizationStructurePage() {
                     <div>
                       <p className="text-sm text-muted-foreground">Pendidikan</p>
                       <p>{selectedLeader.pendidikan}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <Mail className="mt-1 h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Email</p>
-                      <p>{selectedLeader.email}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <Phone className="mt-1 h-5 w-5 text-primary" />
-                    <div>
-                      <p className="text-sm text-muted-foreground">Nomor Telepon</p>
-                      <p>{selectedLeader.phone}</p>
                     </div>
                   </div>
 

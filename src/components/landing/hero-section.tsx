@@ -63,7 +63,7 @@ export function HeroSection({ page = "home" }) {
   if (loading) {
     return (
       <div className="h-[500px] flex items-center justify-center">
-        Loading hero...
+        Memuat Gambar...
       </div>
     )
   }

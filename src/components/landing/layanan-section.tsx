@@ -1,0 +1,185 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+
+import { supabase } from "@/lib/supabaseClient";
+
+import { Images } from "lucide-react";
+
+import Lightbox from "yet-another-react-lightbox";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import Captions from "yet-another-react-lightbox/plugins/captions";
+
+import "yet-another-react-lightbox/styles.css";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
+import "yet-another-react-lightbox/plugins/captions.css";
+
+import { Button } from "@/components/ui/button";
+
+import { FadeUp, ScaleIn, StaggerContainer, StaggerItem, SlideRight, SlideLeft, FadeIn } from "@/components/animations"
+
+interface Item {
+  id: string;
+  title: string;
+  description: string | null;
+  image_url: string;
+  created_at: string;
+}
+
+export function LayananSection() {
+  const [photos, setPhotos] = useState<Item[]>([]);
+  const [index, setIndex] = useState(-1);
+
+  // ================= FETCH 6 TERBARU =================
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data, error } = await supabase
+        .from("media_content")
+        .select("*")
+        .eq("category", "layanan")
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      if (error) {
+        console.log(error.message);
+        return;
+      }
+
+      setPhotos(data || []);
+    };
+
+    fetchData();
+  }, []);
+
+  return (
+    <section className="bg-muted/30 py-5">
+      <div className="container mx-auto px-4">
+
+        {/* HEADER */}
+        <div className="mb-16 text-center">
+          <FadeIn>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Layanan Diskominfo
+          </h2>
+          </FadeIn>
+          <FadeUp>
+          <p className="mt-4 text-lg text-muted-foreground">
+            Alur Pelayanan Diskominfo Kabupaten TTS.
+          </p>
+          </FadeUp>
+        </div>
+
+        {/* GRID */}
+        <div>
+
+          {/* Header */}
+          <div className="mb-8 flex items-center gap-3">
+            <div className="rounded-lg bg-primary/10 p-2">
+              <Images className="h-5 w-5 text-primary" />
+            </div>
+
+            <SlideRight once={true}>
+              <h3 className="text-2xl font-semibold">
+                Layanan
+              </h3>
+            </SlideRight>
+          </div>
+
+
+          {/* Gallery Card */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+            {photos.map((photo, i) => (
+
+              <SlideRight
+                key={photo.id}
+                once={false}
+                delay={i * 0.15}
+              >
+
+                <div
+                  onClick={() => setIndex(i)}
+                  className="
+                    group
+                    cursor-pointer
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    bg-card
+                    shadow-sm
+                    transition-all
+                    duration-300
+                    hover:-translate-y-2
+                    hover:shadow-xl
+                  "
+                >
+
+                  <div className="overflow-hidden">
+                    <Image
+                      src={photo.image_url}
+                      alt={photo.title}
+                      width={600}
+                      height={400}
+                      className="
+                        h-64
+                        w-full
+                        object-cover
+                        transition
+                        duration-500
+                        group-hover:scale-110
+                      "
+                    />
+                  </div>
+
+
+                  <div className="p-5">
+
+                    <h4 className="font-semibold transition-colors group-hover:text-primary">
+                      {photo.title}
+                    </h4>
+
+                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                      {photo.description}
+                    </p>
+
+                  </div>
+
+                </div>
+
+              </SlideRight>
+
+            ))}
+
+          </div>
+
+        </div>
+
+        {/* BUTTON */}
+        <div className="mt-12 flex justify-center">
+          <Button asChild size="lg">
+            <Link href="/menu-lainnya/layanan">
+              Lihat Semua Layanan
+            </Link>
+          </Button>
+        </div>
+
+      </div>
+
+      {/* LIGHTBOX */}
+      <Lightbox
+        open={index >= 0}
+        close={() => setIndex(-1)}
+        index={index}
+        plugins={[Zoom, Thumbnails, Captions]}
+        slides={photos.map((p) => ({
+          src: p.image_url,
+          title: p.title,
+          description: p.description || "",
+        }))}
+      />
+    </section>
+  );
+}

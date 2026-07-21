@@ -6,6 +6,7 @@ import { QuickAccessSection } from '@/components/landing/quick-access-section'
 import { AboutSection } from '@/components/landing/about-section'
 import { OrganizationSection } from "@/components/landing/organization-section";
 import { GallerySection } from "@/components/landing/gallery-section";
+import { LayananSection } from "@/components/landing/layanan-section";
 import VisitorStats from "@/components/landing/visitor-stats";
 import VisitorTracker from "@/components/VisitorTracker";
 
@@ -23,6 +24,7 @@ export function LandingPageContent() {
         <QuickAccessSection />
         <AboutSection />
         <OrganizationSection />
+        <LayananSection />
         <GallerySection />
         <VisitorStats />
       </main>

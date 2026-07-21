@@ -2,76 +2,108 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Leader } from "./types";
+
+export interface Leader {
+  name: string;
+  position: string;
+  image: string;
+
+  nip?: string;
+  pangkat?: string;
+  pendidikan?: string;
+  email?: string;
+  phone?: string;
+  bio?: string;
+}
 
 interface LeaderCardProps {
   leader: Leader;
-  size?: "sm" | "md" | "lg";
   onClick?: () => void;
+  className?: string;
 }
 
 export default function LeaderCard({
   leader,
-  size = "md",
   onClick,
+  className = "",
 }: LeaderCardProps) {
-  const imageSize = {
-    sm: "h-20 w-20",
-    md: "h-28 w-28",
-    lg: "h-40 w-40",
-  };
 
-  const cardWidth = {
-    sm: "max-w-[220px]",
-    md: "max-w-[260px]",
-    lg: "max-w-sm",
-  };
-
+  if (!leader) return null;
   return (
     <motion.div
-      layout
-      initial={{
-        opacity: 0,
-        y: 40,
-        scale: 0.9,
-      }}
-      whileInView={{
-        opacity: 1,
-        y: 0,
-        scale: 1,
-      }}
-      viewport={{ once: true }}
-      transition={{
-        duration: 0.45,
-      }}
       whileHover={{
-        y: -10,
+        y: -8,
         scale: 1.03,
       }}
       whileTap={{
         scale: 0.98,
       }}
+      transition={{
+        duration: 0.25,
+      }}
       onClick={onClick}
-      className={`group cursor-pointer rounded-3xl border bg-card p-6 shadow-sm transition-shadow hover:shadow-xl w-full ${cardWidth[size]}`}
+      className={`
+        w-64
+        rounded-2xl
+        border
+        bg-card
+        p-6
+        shadow-md
+        transition-all
+        hover:shadow-xl
+        flex
+        flex-col
+        cursor-pointer
+        ${className}
+      `}
     >
-      <div
-        className={`relative mx-auto overflow-hidden rounded-full border-4 border-primary/20 ${imageSize[size]}`}
-      >
-        <Image
-          src={leader.image}
-          alt={leader.name}
-          fill
-          className="object-cover transition duration-500 group-hover:scale-110"
-        />
-      </div>
+      <div className="flex flex-1 flex-col items-center">
 
-      <div className="mt-5 text-center">
+        {/* FOTO */}
 
-        <h3 className="font-bold">
+        <div className="relative h-28 w-28 overflow-hidden rounded-full border-4 border-primary/20">
+
+        {leader.image ? (
+
+          <Image
+            src={leader.image}
+            alt={leader.name}
+            fill
+            className="object-cover"
+            sizes="112px"
+          />
+
+        ) : (
+
+          <div
+            className="
+              flex
+              h-full
+              w-full
+              items-center
+              justify-center
+              bg-muted
+              text-3xl
+              font-bold
+              text-muted-foreground
+            "
+          >
+            {leader.name?.charAt(0)}
+          </div>
+
+        )}
+
+        </div>
+
+        {/* NAMA */}
+
+        <h3 className="mt-5 flex min-h-[56px] items-center justify-center text-center text-lg font-bold leading-6">
           {leader.name}
         </h3>
 
-        <p className="mt-2 text-sm text-primary">
+        {/* JABATAN */}
+
+        <p className="mt-2 flex min-h-[60px] items-center justify-center text-center text-sm leading-6 text-muted-foreground whitespace-pre-line">
           {leader.position}
         </p>
 

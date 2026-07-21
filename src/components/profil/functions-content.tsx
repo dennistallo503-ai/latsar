@@ -55,13 +55,13 @@ export default function TaskFunctionPage() {
       {/* CONTENT */}
       <section className="py-16">
 
-        <div className="container mx-auto max-w-6xl px-4 grid gap-8 lg:grid-cols-5">
+        <div className="container mx-auto max-w-6xl px-4 grid gap-8 lg:grid-cols-1">
 
 
 
           {/* TUGAS */}
 
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3">
 
             <SlideLeft
               once={false}
